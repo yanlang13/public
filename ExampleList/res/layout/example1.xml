@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <fragment
+        android:id="@+id/mMap"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/mMap"
+        android:background="#D000"
+        android:orientation="vertical"
+        android:padding="6dp" >
+
+        <Button
+            android:id="@+id/CameraPosition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CameraPosition" />
+
+        <Spinner
+            android:id="@+id/spMapType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</RelativeLayout>

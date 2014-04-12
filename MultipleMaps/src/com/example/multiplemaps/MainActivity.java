@@ -1,25 +1,17 @@
 package com.example.multiplemaps;
 
-import java.security.PublicKey;
-
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.CancelableCallback;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private GoogleMap upperMap, lowerMap;
@@ -51,14 +43,21 @@ public class MainActivity extends Activity {
 			lowerMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.lowerMap)).getMap();
 			if (upperMap != null && lowerMap != null) {
-				// 存取後才執行
+				//存取後執行
+				mapUiSettings();
 				callTheLastCameraPosition();
 				syncTwoMapCameraPosition();
+				
+				
 			}// end of if
 		}// end of if
 	}// end of setUpMapIfNeeded()
-
+	
 	// =====
+	private void mapUiSettings(){// call from setUpMapIfNeeded() 
+	}// end of mapUiSettings()
+	
+	// ===== 同步移動cameraPosition
 	private void syncTwoMapCameraPosition() { // call from setUpMapIfNeeded()
 		upperMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
@@ -85,10 +84,9 @@ public class MainActivity extends Activity {
 				lowerMapStopper = false;
 			}
 		});// end of lowerMap.setOnCameraChangeListener
-
 	}// end of syncTwoMap
 
-	// =====
+	// ===== 抓關閉前的點cameraPosition
 	private void callTheLastCameraPosition() { // call from setUpMapIfNeeded()
 		SharedPreferences sp = getSharedPreferences("theLastCameraPosition",
 				Context.MODE_PRIVATE);

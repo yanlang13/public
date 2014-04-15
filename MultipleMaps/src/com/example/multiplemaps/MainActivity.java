@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,47 +67,60 @@ public class MainActivity extends Activity {
 			public void onMapClick(LatLng geoPoint) {
 				// 如果HashMap為空
 				if (userCircle.isEmpty()) {
-					displayUserClicked(geoPoint);
+					displayUserClicked(upperMap, geoPoint);
 				} else {
 					// 如果HashMap有circle，就取出來刪除(裡面只會有一個，所以不用collection?)。
 					Circle uCircle = userCircle.get("uClick");
 					uCircle.remove();
 					Circle lCircle = userCircle.get("lClick");
 					lCircle.remove();
-					displayUserClicked(geoPoint);
+					displayUserClicked(upperMap, geoPoint);
 				}
 			}
 		}); // end of upperMap.setOnMapClickListener
-		
 		lowerMap.setOnMapClickListener(new OnMapClickListener() {
 			@Override
 			public void onMapClick(LatLng geoPoint) {
 				if (userCircle.isEmpty()) {
-					displayUserClicked(geoPoint);
+					displayUserClicked(lowerMap, geoPoint);
 				} else {
 					Circle uCircle = userCircle.get("uClick");
 					uCircle.remove();
 					Circle lCircle = userCircle.get("lClick");
 					lCircle.remove();
-					displayUserClicked(geoPoint);
+					displayUserClicked(lowerMap, geoPoint);
 				}
 			}
 		}); // end of lowerMap.setOnMapClickListener
 	}// end of showUserClicked()
 
-	// 在user點擊位置，顯示圓圈。
-	private void displayUserClicked(LatLng geoPoint) { // call from
-														// whereUserClicked
+	// 在user點擊位置，顯示圓圈。透過location class讓這個circle不至於失控。
+	private void displayUserClicked(GoogleMap gMap, LatLng geoPoint) { // call
+																		// from
+		//"left"是為lfetLocation命名
+		Location leftLocation = new Location("left");
+		//getProjection用來轉換螢幕座標(pixels)與地圖座標(LatLng)
+		//getVisibleRegion(): four-sided polygon that is visible in a map's camera.
+		leftLocation.setLatitude(gMap.getProjection().getVisibleRegion().farLeft.latitude);
+		leftLocation.setLongitude(gMap.getProjection().getVisibleRegion().farLeft.longitude);
+
+		Location rightLocation = new Location("rifht");
+		rightLocation.setLatitude(gMap.getProjection().getVisibleRegion().farRight.latitude);
+		rightLocation.setLongitude(gMap.getProjection().getVisibleRegion().farRight.longitude);
+
+		float viewDistance = leftLocation.distanceTo(rightLocation);
+		double radius = viewDistance / 1000;
+
 		CircleOptions co = new CircleOptions();
 		co.center(geoPoint);
-		co.radius(10000);
+		co.radius(radius);
 		// 要用getResources().getColor(R.color...)，才能正確獨到顏色。
 		// 只用R.color不會顯示錯誤，但不會有顏色。
 		co.fillColor(getResources().getColor(R.color.lava_red));
 		co.strokeColor(getResources().getColor(R.color.lava_red));
 		Circle uCircle = upperMap.addCircle(co);
-		Circle lCircle = lowerMap.addCircle(co);
 		userCircle.put("uClick", uCircle);
+		Circle lCircle = lowerMap.addCircle(co);
 		userCircle.put("lClick", lCircle);
 	} // end of displayUserClicked
 

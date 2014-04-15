@@ -1,11 +1,17 @@
 package com.example.multiplemaps;
 
+import java.util.HashMap;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,6 +23,8 @@ public class MainActivity extends Activity {
 	private GoogleMap upperMap, lowerMap;
 	private boolean upperMapStopper = false;
 	private boolean lowerMapStopper = false;
+	// user的點擊位置，放到HashMap中，目標是一次只顯示一個。
+	private HashMap<String, Circle> userCircle = new HashMap<String, Circle>();
 
 	// ====================================================================onCreating
 	@Override
@@ -43,20 +51,65 @@ public class MainActivity extends Activity {
 			lowerMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.lowerMap)).getMap();
 			if (upperMap != null && lowerMap != null) {
-				//存取後執行
-				mapUiSettings();
+				// 存取後執行
 				callTheLastCameraPosition();
 				syncTwoMapCameraPosition();
-				
-				
+				whereUserClicked();
 			}// end of if
-		}// end of if
-	}// end of setUpMapIfNeeded()
-	
-	// =====
-	private void mapUiSettings(){// call from setUpMapIfNeeded() 
-	}// end of mapUiSettings()
-	
+		}// end of setUpMapIfNeeded()
+	}
+
+	// =====輕點顯示點擊位置
+	private void whereUserClicked() {
+		upperMap.setOnMapClickListener(new OnMapClickListener() {
+			@Override
+			public void onMapClick(LatLng geoPoint) {
+				// 如果HashMap為空
+				if (userCircle.isEmpty()) {
+					displayUserClicked(geoPoint);
+				} else {
+					// 如果HashMap有circle，就取出來刪除(裡面只會有一個，所以不用collection?)。
+					Circle uCircle = userCircle.get("uClick");
+					uCircle.remove();
+					Circle lCircle = userCircle.get("lClick");
+					lCircle.remove();
+					displayUserClicked(geoPoint);
+				}
+			}
+		}); // end of upperMap.setOnMapClickListener
+		
+		lowerMap.setOnMapClickListener(new OnMapClickListener() {
+			@Override
+			public void onMapClick(LatLng geoPoint) {
+				if (userCircle.isEmpty()) {
+					displayUserClicked(geoPoint);
+				} else {
+					Circle uCircle = userCircle.get("uClick");
+					uCircle.remove();
+					Circle lCircle = userCircle.get("lClick");
+					lCircle.remove();
+					displayUserClicked(geoPoint);
+				}
+			}
+		}); // end of lowerMap.setOnMapClickListener
+	}// end of showUserClicked()
+
+	// 在user點擊位置，顯示圓圈。
+	private void displayUserClicked(LatLng geoPoint) { // call from
+														// whereUserClicked
+		CircleOptions co = new CircleOptions();
+		co.center(geoPoint);
+		co.radius(10000);
+		// 要用getResources().getColor(R.color...)，才能正確獨到顏色。
+		// 只用R.color不會顯示錯誤，但不會有顏色。
+		co.fillColor(getResources().getColor(R.color.lava_red));
+		co.strokeColor(getResources().getColor(R.color.lava_red));
+		Circle uCircle = upperMap.addCircle(co);
+		Circle lCircle = lowerMap.addCircle(co);
+		userCircle.put("uClick", uCircle);
+		userCircle.put("lClick", lCircle);
+	} // end of displayUserClicked
+
 	// ===== 同步移動cameraPosition
 	private void syncTwoMapCameraPosition() { // call from setUpMapIfNeeded()
 		upperMap.setOnCameraChangeListener(new OnCameraChangeListener() {

@@ -27,7 +27,6 @@ public class MainActivity extends Activity {
 	// user的點擊位置，放到HashMap中，目標是一次只顯示一個。
 	private HashMap<String, Circle> userCircle = new HashMap<String, Circle>();
 
-	// ====================================================================onCreating
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,15 +34,19 @@ public class MainActivity extends Activity {
 
 	}// end of onCreate
 
-	// ====================================================================onCreated
-	// ====================================================================onResuming
-
 	@Override
 	protected void onResume() {
 		super.onResume();
 		setUpMapIfNeeded();
 	}// end of onResume()
 
+	@Override
+	protected void onStop() {
+		super.onStop();
+		saveTheLastCameraPosition();
+	}// end of onStop
+
+	// ====================================================================onResuming
 	// ===== 確認地圖有無正確讀取
 	private void setUpMapIfNeeded() { // call from onResume()
 		if (upperMap == null || lowerMap == null) {
@@ -59,6 +62,51 @@ public class MainActivity extends Activity {
 			}// end of if
 		}// end of setUpMapIfNeeded()
 	}
+
+	// ===== 抓關閉前的點cameraPosition
+	private void callTheLastCameraPosition() { // call from setUpMapIfNeeded()
+		SharedPreferences sp = getSharedPreferences("theLastCameraPosition",
+				Context.MODE_PRIVATE);
+		double latitude = Double.valueOf(sp.getString("latitude", "0.0"));
+		double longitude = Double.valueOf(sp.getString("longitude", "0.0"));
+		float tilt = sp.getFloat("tilt", 0);
+		float bearing = sp.getFloat("bearing", 0);
+		float zoom = sp.getFloat("zoom", 0);
+		LatLng target = new LatLng(latitude, longitude);
+		CameraPosition cp = new CameraPosition(target, zoom, tilt, bearing);
+		// 一次修改兩個地圖的位置，這樣可以讓cameraChange的功能不影響到calltheLastCP的結果
+		upperMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+		lowerMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+	}// end of callTheLastCameraPostion()
+
+	// ===== 同步移動cameraPosition
+	private void syncTwoMapCameraPosition() { // call from setUpMapIfNeeded()
+		upperMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+			@Override
+			public void onCameraChange(CameraPosition cameraPosition) {
+				if (!upperMapStopper) {
+					// 停止lowerMap移動(不停指的話，系統會以為使用者一直操作)
+					lowerMapStopper = true;
+					lowerMap.moveCamera(CameraUpdateFactory
+							.newCameraPosition(cameraPosition));
+				}
+				// 開啟upperMap的移動功能，讓下次移動能改變lower的位置
+				upperMapStopper = false;
+			}
+		}); // end of upperMap.setOnCameraChangeListener
+
+		lowerMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+			@Override
+			public void onCameraChange(CameraPosition cameraPosition) {
+				if (!lowerMapStopper) {
+					upperMapStopper = true;
+					upperMap.moveCamera(CameraUpdateFactory
+							.newCameraPosition(cameraPosition));
+				}
+				lowerMapStopper = false;
+			}
+		});// end of lowerMap.setOnCameraChangeListener
+	}// end of syncTwoMap
 
 	// =====輕點顯示點擊位置
 	private void whereUserClicked() {
@@ -96,17 +144,22 @@ public class MainActivity extends Activity {
 
 	// 在user點擊位置，顯示圓圈。透過location class讓這個circle不至於失控。
 	private void displayUserClicked(GoogleMap gMap, LatLng geoPoint) { // call
-																		// from
-		//"left"是為lfetLocation命名
+		// from
+		// "left"是為lfetLocation命名
 		Location leftLocation = new Location("left");
-		//getProjection用來轉換螢幕座標(pixels)與地圖座標(LatLng)
-		//getVisibleRegion(): four-sided polygon that is visible in a map's camera.
-		leftLocation.setLatitude(gMap.getProjection().getVisibleRegion().farLeft.latitude);
-		leftLocation.setLongitude(gMap.getProjection().getVisibleRegion().farLeft.longitude);
+		// getProjection用來轉換螢幕座標(pixels)與地圖座標(LatLng)
+		// getVisibleRegion(): four-sided polygon that is visible in a map's
+		// camera.
+		leftLocation
+				.setLatitude(gMap.getProjection().getVisibleRegion().farLeft.latitude);
+		leftLocation
+				.setLongitude(gMap.getProjection().getVisibleRegion().farLeft.longitude);
 
 		Location rightLocation = new Location("rifht");
-		rightLocation.setLatitude(gMap.getProjection().getVisibleRegion().farRight.latitude);
-		rightLocation.setLongitude(gMap.getProjection().getVisibleRegion().farRight.longitude);
+		rightLocation
+				.setLatitude(gMap.getProjection().getVisibleRegion().farRight.latitude);
+		rightLocation
+				.setLongitude(gMap.getProjection().getVisibleRegion().farRight.longitude);
 
 		float viewDistance = leftLocation.distanceTo(rightLocation);
 		double radius = viewDistance / 1000;
@@ -124,59 +177,9 @@ public class MainActivity extends Activity {
 		userCircle.put("lClick", lCircle);
 	} // end of displayUserClicked
 
-	// ===== 同步移動cameraPosition
-	private void syncTwoMapCameraPosition() { // call from setUpMapIfNeeded()
-		upperMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-			@Override
-			public void onCameraChange(CameraPosition cameraPosition) {
-				if (!upperMapStopper) {
-					// 停止lowerMap移動(不停指的話，系統會以為使用者一直操作)
-					lowerMapStopper = true;
-					lowerMap.moveCamera(CameraUpdateFactory
-							.newCameraPosition(cameraPosition));
-				}
-				// 開啟upperMap的移動功能，讓下次移動能改變lower的位置
-				upperMapStopper = false;
-			}
-		}); // end of upperMap.setOnCameraChangeListener
-
-		lowerMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-			@Override
-			public void onCameraChange(CameraPosition cameraPosition) {
-				if (!lowerMapStopper) {
-					upperMapStopper = true;
-					upperMap.moveCamera(CameraUpdateFactory
-							.newCameraPosition(cameraPosition));
-				}
-				lowerMapStopper = false;
-			}
-		});// end of lowerMap.setOnCameraChangeListener
-	}// end of syncTwoMap
-
-	// ===== 抓關閉前的點cameraPosition
-	private void callTheLastCameraPosition() { // call from setUpMapIfNeeded()
-		SharedPreferences sp = getSharedPreferences("theLastCameraPosition",
-				Context.MODE_PRIVATE);
-		double latitude = Double.valueOf(sp.getString("latitude", "0.0"));
-		double longitude = Double.valueOf(sp.getString("longitude", "0.0"));
-		float tilt = sp.getFloat("tilt", 0);
-		float bearing = sp.getFloat("bearing", 0);
-		float zoom = sp.getFloat("zoom", 0);
-		LatLng target = new LatLng(latitude, longitude);
-		CameraPosition cp = new CameraPosition(target, zoom, tilt, bearing);
-		// 一次修改兩個地圖的位置，這樣可以讓cameraChange的功能不影響到calltheLastCP的結果
-		upperMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
-		lowerMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
-	}// end of callTheLastCameraPostion()
-
 	// ====================================================================onResumed
-	// ====================================================================onStoping
-	protected void onStop() {
-		super.onStop();
-		saveTheLastCameraPosition();
-	}// end of onStop
-		// =====
 
+	// ====================================================================onStoping
 	private void saveTheLastCameraPosition() { // call from onStop
 		CameraPosition cpUpperMap = upperMap.getCameraPosition();
 		SharedPreferences sp = getSharedPreferences("theLastCameraPosition",
@@ -191,15 +194,14 @@ public class MainActivity extends Activity {
 	}// end of saveTheLastCameraPosition()
 
 	// ====================================================================onStopinged
+
 	// ====================================================================MenuS
-	// =====
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	} // end of onCreateOptionsMenu
 
-	// =====
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
@@ -211,3 +213,4 @@ public class MainActivity extends Activity {
 
 	// ====================================================================MenuE
 }// end of MainActivity
+

@@ -2,10 +2,17 @@ package com.example.multiplemaps;
 
 import java.util.HashMap;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
@@ -17,15 +24,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ConnectionCallbacks,
+		LocationListener, OnMyLocationButtonClickListener, OnConnectionFailedListener {
 	private GoogleMap upperMap, lowerMap;
 	private boolean upperMapStopper = false;
 	private boolean lowerMapStopper = false;
 	// user的點擊位置，放到HashMap中，目標是一次只顯示一個。
 	private HashMap<String, Circle> userCircle = new HashMap<String, Circle>();
+	private LocationClient mLocationClient;
+	// 處理LocationClient的品質
+	private static final LocationRequest REQUEST = LocationRequest.create()
+			.setInterval(5000).setFastestInterval(16)
+			.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +53,20 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		setUpMapIfNeeded();
+		setUpLocationClientIfNeeded();
+		// 連接服務，等待 onConnected時再將locationRequest的設定值交出
+		mLocationClient.connect();
 	}// end of onResume()
-
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (mLocationClient != null) {
+			mLocationClient.disconnect();
+		}
+	}// end of onPause()
+	
+	
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -59,6 +86,7 @@ public class MainActivity extends Activity {
 				callTheLastCameraPosition();
 				syncTwoMapCameraPosition();
 				whereUserClicked();
+				userUiSetting();
 			}// end of if
 		}// end of setUpMapIfNeeded()
 	}
@@ -109,7 +137,7 @@ public class MainActivity extends Activity {
 	}// end of syncTwoMap
 
 	// =====輕點顯示點擊位置
-	private void whereUserClicked() {
+	private void whereUserClicked() { // call from setUpMapIfNeeded
 		upperMap.setOnMapClickListener(new OnMapClickListener() {
 			@Override
 			public void onMapClick(LatLng geoPoint) {
@@ -177,6 +205,20 @@ public class MainActivity extends Activity {
 		userCircle.put("lClick", lCircle);
 	} // end of displayUserClicked
 
+	// userUiSetting
+	private void userUiSetting(){ // call from call from setUpMapIfNeeded
+		upperMap.setMyLocationEnabled(true);
+		upperMap.setOnMyLocationButtonClickListener(this);
+	}// end of userUiSetting
+	
+	//
+	private void setUpLocationClientIfNeeded(){ // call from onResume
+		if(mLocationClient == null){
+			// ConnectionCallback and OnConnectionFailedListener
+			mLocationClient = new LocationClient(getApplicationContext(),this,this);
+		}
+	}// end of setUpLocationClientIfNeeded()
+	
 	// ====================================================================onResumed
 
 	// ====================================================================onStoping
@@ -195,7 +237,7 @@ public class MainActivity extends Activity {
 
 	// ====================================================================onStopinged
 
-	// ====================================================================MenuS
+	// ====================================================================MenuING
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -210,7 +252,46 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
+	
+	// ====================================================================MenuED
+	
+	// ====================================================================Overriding
+	@Override
+	// ConnectionCallbacks
+	public void onConnected(Bundle arg0) {
+		// this 是指LocationListener
+		mLocationClient.requestLocationUpdates(REQUEST, this);
+	}// end of onConnected
 
-	// ====================================================================MenuE
+	@Override
+	// ConnectionCallbacks
+	public void onDisconnected() {
+		Toast.makeText(getApplication(), "LocationClient is disconnected",
+				Toast.LENGTH_SHORT).show();
+	}// end of onDisconnected
+
+	@Override
+	//LocationListener
+	public void onLocationChanged(Location locaion) {
+		Log.d("mdb", "in onLocationChanged");
+	}// end of on  onLocationChanged
+
+	@Override
+	//OnMyLocationButtonClickListener 
+	public boolean onMyLocationButtonClick() {
+		Log.d("mdb", "in onMyLocationButtonClick");
+		// Return false so that we don't consume the event and the default
+		// behavior still occurs
+		// (the camera animates to the user's current position).
+		return false;
+	}
+
+	@Override
+	//OnConnectionFailedListener
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		Log.d("mdb", "in onConnectionFailed");
+	}// end of onConnectionFailed
+	
+	// ====================================================================OverrideD
 }// end of MainActivity
 

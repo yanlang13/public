@@ -86,29 +86,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					R.id.lowerMap)).getMap();
 			if (upperMap != null && lowerMap != null) {
 				// 存取後執行
-				callTheLastCameraPosition();
+				mapTools.callTheLastCameraPosition(getApplicationContext(), upperMap, "theLastCameraPosition");
 				syncTwoMapCameraPosition();
 				whereUserClicked();
 				userUiSetting();
 			}// end of if
 		}// end of setUpMapIfNeeded()
 	}
-
-	// ===== 抓關閉前的點cameraPosition
-	private void callTheLastCameraPosition() { // call from setUpMapIfNeeded()
-		SharedPreferences sp = getSharedPreferences("theLastCameraPosition",
-				Context.MODE_PRIVATE);
-		double latitude = Double.valueOf(sp.getString("latitude", "0.0"));
-		double longitude = Double.valueOf(sp.getString("longitude", "0.0"));
-		float tilt = sp.getFloat("tilt", 0);
-		float bearing = sp.getFloat("bearing", 0);
-		float zoom = sp.getFloat("zoom", 0);
-		LatLng target = new LatLng(latitude, longitude);
-		CameraPosition cp = new CameraPosition(target, zoom, tilt, bearing);
-		// 一次修改兩個地圖的位置，這樣可以讓cameraChange的功能不影響到calltheLastCP的結果
-		upperMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
-		lowerMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
-	}// end of callTheLastCameraPostion()
 
 	// ===== 同步移動cameraPosition
 	private void syncTwoMapCameraPosition() { // call from setUpMapIfNeeded()

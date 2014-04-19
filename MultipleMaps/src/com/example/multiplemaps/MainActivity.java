@@ -2,6 +2,7 @@ package com.example.multiplemaps;
 
 import java.util.HashMap;
 
+import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -20,6 +21,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -31,6 +33,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements ConnectionCallbacks,
 		LocationListener, OnMyLocationButtonClickListener, OnConnectionFailedListener {
+	private MapTools mapTools = new MapTools();
 	private GoogleMap upperMap, lowerMap;
 	private boolean upperMapStopper = false;
 	private boolean lowerMapStopper = false;
@@ -41,12 +44,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final LocationRequest REQUEST = LocationRequest.create()
 			.setInterval(5000).setFastestInterval(16)
 			.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
 	}// end of onCreate
 
 	@Override
@@ -70,7 +72,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		saveTheLastCameraPosition();
+		Log.d("mdb", "onStoping");
+		mapTools.saveTheLastCameraPosition(getApplicationContext(), upperMap, "theLastCameraPosition");
 	}// end of onStop
 
 	// ====================================================================onResuming
@@ -222,18 +225,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	// ====================================================================onResumed
 
 	// ====================================================================onStoping
-	private void saveTheLastCameraPosition() { // call from onStop
-		CameraPosition cpUpperMap = upperMap.getCameraPosition();
-		SharedPreferences sp = getSharedPreferences("theLastCameraPosition",
-				Context.MODE_PRIVATE);
-		SharedPreferences.Editor spe = sp.edit();
-		spe.putString("latitude", String.valueOf(cpUpperMap.target.latitude));
-		spe.putString("longitude", String.valueOf(cpUpperMap.target.longitude));
-		spe.putFloat("tilt", cpUpperMap.tilt);
-		spe.putFloat("bearing", cpUpperMap.bearing);
-		spe.putFloat("zoom", cpUpperMap.zoom);
-		spe.commit();
-	}// end of saveTheLastCameraPosition()
 
 	// ====================================================================onStopinged
 
@@ -249,7 +240,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
+		}else if (id == R.id.action_search){
+			AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainActivity.this);
+			
+			return true;
 		}
+		
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
 	

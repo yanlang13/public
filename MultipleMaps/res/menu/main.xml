@@ -3,6 +3,12 @@
     tools:context="com.example.multiplemaps.MainActivity" >
 
     <item
+        android:id="@+id/action_search"
+        android:orderInCategory="100"
+        android:icon="@drawable/action_search"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_search"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"

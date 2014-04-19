@@ -22,18 +22,23 @@ import com.google.android.gms.maps.model.LatLng;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements ConnectionCallbacks,
-		LocationListener, OnMyLocationButtonClickListener, OnConnectionFailedListener {
+		LocationListener, OnMyLocationButtonClickListener,
+		OnConnectionFailedListener {
 	private MapTools mapTools = new MapTools();
+	private ProgressDialog progressDialog;
 	private GoogleMap upperMap, lowerMap;
 	private boolean upperMapStopper = false;
 	private boolean lowerMapStopper = false;
@@ -44,11 +49,14 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final LocationRequest REQUEST = LocationRequest.create()
 			.setInterval(5000).setFastestInterval(16)
 			.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-	
+
+	private EditText etSearch; // 接收輸入的地址
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		progressDialog = new ProgressDialog(this);
 	}// end of onCreate
 
 	@Override
@@ -59,7 +67,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		// 連接服務，等待 onConnected時再將locationRequest的設定值交出
 		mLocationClient.connect();
 	}// end of onResume()
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -67,13 +75,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			mLocationClient.disconnect();
 		}
 	}// end of onPause()
-	
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
 		Log.d("mdb", "onStoping");
-		mapTools.saveTheLastCameraPosition(getApplicationContext(), upperMap, "theLastCameraPosition");
+		mapTools.saveTheLastCameraPosition(getApplicationContext(), upperMap,
+				"theLastCameraPosition");
 	}// end of onStop
 
 	// ====================================================================onResuming
@@ -86,7 +94,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					R.id.lowerMap)).getMap();
 			if (upperMap != null && lowerMap != null) {
 				// 存取後執行
-				mapTools.callTheLastCameraPosition(getApplicationContext(), upperMap, "theLastCameraPosition");
+				mapTools.callTheLastCameraPosition(getApplicationContext(),
+						upperMap, "theLastCameraPosition");
 				syncTwoMapCameraPosition();
 				whereUserClicked();
 				userUiSetting();
@@ -159,24 +168,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 	// 在user點擊位置，顯示圓圈。透過location class讓這個circle不至於失控。
 	private void displayUserClicked(GoogleMap gMap, LatLng geoPoint) { // call
-		// from
-		// "left"是為lfetLocation命名
-		Location leftLocation = new Location("left");
-		// getProjection用來轉換螢幕座標(pixels)與地圖座標(LatLng)
-		// getVisibleRegion(): four-sided polygon that is visible in a map's
-		// camera.
-		leftLocation
-				.setLatitude(gMap.getProjection().getVisibleRegion().farLeft.latitude);
-		leftLocation
-				.setLongitude(gMap.getProjection().getVisibleRegion().farLeft.longitude);
-
-		Location rightLocation = new Location("rifht");
-		rightLocation
-				.setLatitude(gMap.getProjection().getVisibleRegion().farRight.latitude);
-		rightLocation
-				.setLongitude(gMap.getProjection().getVisibleRegion().farRight.longitude);
-
-		float viewDistance = leftLocation.distanceTo(rightLocation);
+		float viewDistance = mapTools.getViewRegionHorizontalDistance(gMap);
 		double radius = viewDistance / 1000;
 
 		CircleOptions co = new CircleOptions();
@@ -193,19 +185,20 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	} // end of displayUserClicked
 
 	// userUiSetting
-	private void userUiSetting(){ // call from call from setUpMapIfNeeded
+	private void userUiSetting() { // call from call from setUpMapIfNeeded
 		upperMap.setMyLocationEnabled(true);
 		upperMap.setOnMyLocationButtonClickListener(this);
 	}// end of userUiSetting
-	
+
 	//
-	private void setUpLocationClientIfNeeded(){ // call from onResume
-		if(mLocationClient == null){
+	private void setUpLocationClientIfNeeded() { // call from onResume
+		if (mLocationClient == null) {
 			// ConnectionCallback and OnConnectionFailedListener
-			mLocationClient = new LocationClient(getApplicationContext(),this,this);
+			mLocationClient = new LocationClient(getApplicationContext(), this,
+					this);
 		}
 	}// end of setUpLocationClientIfNeeded()
-	
+
 	// ====================================================================onResumed
 
 	// ====================================================================onStoping
@@ -224,17 +217,41 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
-		}else if (id == R.id.action_search){
-			AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainActivity.this);
-			
+		} else if (id == R.id.action_search) {
+			AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+					MainActivity.this);
+			LayoutInflater inflater = this.getLayoutInflater();
+			View dialogView = inflater.inflate(R.layout.action_search, null);
+			// 取得輸入的地址
+			etSearch = (EditText) dialogView.findViewById(R.id.address_search);
+			alertBuilder.setView(dialogView);
+			alertBuilder.setPositiveButton("Search",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							progressDialog.show();
+							progressDialog.setCanceledOnTouchOutside(false);
+						}
+					});
+
+			alertBuilder.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							
+						}
+					});
+			AlertDialog alertDialog = alertBuilder.create();
+			alertDialog.setCanceledOnTouchOutside(false);
+			alertDialog.show();
 			return true;
 		}
-		
+
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
-	
+
 	// ====================================================================MenuED
-	
+
 	// ====================================================================Overriding
 	@Override
 	// ConnectionCallbacks
@@ -251,13 +268,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	}// end of onDisconnected
 
 	@Override
-	//LocationListener
+	// LocationListener
 	public void onLocationChanged(Location locaion) {
 		Log.d("mdb", "in onLocationChanged");
-	}// end of on  onLocationChanged
+	}// end of on onLocationChanged
 
 	@Override
-	//OnMyLocationButtonClickListener 
+	// OnMyLocationButtonClickListener
 	public boolean onMyLocationButtonClick() {
 		Log.d("mdb", "in onMyLocationButtonClick");
 		// Return false so that we don't consume the event and the default
@@ -267,11 +284,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	}
 
 	@Override
-	//OnConnectionFailedListener
+	// OnConnectionFailedListener
 	public void onConnectionFailed(ConnectionResult connectionResult) {
 		Log.d("mdb", "in onConnectionFailed");
 	}// end of onConnectionFailed
-	
+
 	// ====================================================================OverrideD
 }// end of MainActivity
 

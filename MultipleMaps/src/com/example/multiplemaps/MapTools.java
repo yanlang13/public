@@ -2,6 +2,7 @@ package com.example.multiplemaps;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,4 +44,26 @@ public class MapTools {
 		// 一次修改兩個地圖的位置，這樣可以讓cameraChange的功能不影響到calltheLastCP的結果
 		map.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
 	}// end of callTheLastCameraPostion()
+
+	/**
+	 * 取得當下ViewRegin的兩邊距離(公尺，float)
+	 */
+	public float getViewRegionHorizontalDistance(GoogleMap map) {
+		// "left"是為lfetLocation命名
+		Location leftLocation = new Location("left");
+		// getProjection用來轉換螢幕座標(pixels)與地圖座標(LatLng)
+		// getVisibleRegion(): four-sided polygon that is visible in a map's
+		// camera.
+		leftLocation
+				.setLatitude(map.getProjection().getVisibleRegion().farLeft.latitude);
+		leftLocation
+				.setLongitude(map.getProjection().getVisibleRegion().farLeft.longitude);
+
+		Location rightLocation = new Location("rifht");
+		rightLocation
+				.setLatitude(map.getProjection().getVisibleRegion().farRight.latitude);
+		rightLocation
+				.setLongitude(map.getProjection().getVisibleRegion().farRight.longitude);
+		return leftLocation.distanceTo(rightLocation);
+	}// end of getViewRegionHorizontalDistance
 }

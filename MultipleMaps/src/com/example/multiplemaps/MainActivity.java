@@ -245,8 +245,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 							// Ensure that a Geocoder services is available
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
 									&& Geocoder.isPresent()) {
-								new GetAdressTask().execute(etSearch.getText()
-										.toString());
+								new GetAddressTask().execute(
+										MainActivity.this, etSearch.getText()
+												.toString());
 							}
 						}
 					});
@@ -267,46 +268,16 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
 
-	private class GetAdressTask extends AsyncTask<String, Void, Location> {
-
+	private class GetAddressTask extends AddressTask {
 		@Override
 		protected void onPreExecute() {
 			progressDialog.show();
 		}
 
 		@Override
-		protected Location doInBackground(String... params) {
-			// 需要return null or Location
-			// 用params[i]來抓取輸入的值
-			String address = params[0];
-			Log.d("mdb", "address:" + address);
-			Geocoder geocoder = new Geocoder(MainActivity.this);
-			try {
-				List<Address> result = null;
-				result = geocoder.getFromLocationName(address, 1);
-
-				if (result != null && result.size() > 0) {
-					Location location = new Location("address_result");
-					double latitude = result.get(0).getLatitude();
-					double longitude = result.get(0).getLongitude();
-					Log.d("mdg", String.valueOf(latitude));
-					Log.d("mdg", String.valueOf(longitude));
-					location.setLatitude(latitude);
-					location.setLongitude(longitude);
-					return location;
-				}
-
-			} catch (IOException e) {
-				Log.d("mdb", e.toString());
-			}
-			return null;
-		}// end of doInBackground
-
-		@Override
-		protected void onPostExecute(Location location) {
-			if (location != null) {
-				upperMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(
-						location.getLatitude(), location.getLongitude())));
+		protected void onPostExecute(CameraPosition cp) {
+			if (cp != null) {
+				upperMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
 				progressDialog.dismiss();
 			} else {
 				Toast.makeText(MainActivity.this, "wrong address format",
@@ -314,8 +285,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				progressDialog.dismiss();
 			}
 		}// end of onPostExecute
-	}// end of GetAdressTask
-
+	}// end of GetAddressTask
 	// ====================================================================MenuED
 
 	// ====================================================================Overriding

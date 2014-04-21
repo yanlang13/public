@@ -1,6 +1,10 @@
 package com.example.multiplemaps;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+
+import javax.security.auth.PrivateCredentialPermission;
 
 import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
@@ -9,6 +13,7 @@ import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailed
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -23,15 +28,25 @@ import com.google.android.gms.maps.model.LatLng;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.provider.ContactsContract.Profile;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListPopupWindow;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements ConnectionCallbacks,
@@ -49,7 +64,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final LocationRequest REQUEST = LocationRequest.create()
 			.setInterval(5000).setFastestInterval(16)
 			.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
 	private EditText etSearch; // 接收輸入的地址
 
 	@Override
@@ -64,8 +78,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		super.onResume();
 		setUpMapIfNeeded();
 		setUpLocationClientIfNeeded();
-		// 連接服務，等待 onConnected時再將locationRequest的設定值交出
-		mLocationClient.connect();
+
 	}// end of onResume()
 
 	@Override
@@ -229,8 +242,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							progressDialog.show();
-							progressDialog.setCanceledOnTouchOutside(false);
+							// Ensure that a Geocoder services is available
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
+									&& Geocoder.isPresent()) {
+								new GetAdressTask().execute(etSearch.getText()
+										.toString());
+							}
 						}
 					});
 
@@ -238,7 +255,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							
+
 						}
 					});
 			AlertDialog alertDialog = alertBuilder.create();
@@ -249,6 +266,55 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
+
+	private class GetAdressTask extends AsyncTask<String, Void, Location> {
+
+		@Override
+		protected void onPreExecute() {
+			progressDialog.show();
+		}
+
+		@Override
+		protected Location doInBackground(String... params) {
+			// 需要return null or Location
+			// 用params[i]來抓取輸入的值
+			String address = params[0];
+			Log.d("mdb", "address:" + address);
+			Geocoder geocoder = new Geocoder(MainActivity.this);
+			try {
+				List<Address> result = null;
+				result = geocoder.getFromLocationName(address, 1);
+
+				if (result != null && result.size() > 0) {
+					Location location = new Location("address_result");
+					double latitude = result.get(0).getLatitude();
+					double longitude = result.get(0).getLongitude();
+					Log.d("mdg", String.valueOf(latitude));
+					Log.d("mdg", String.valueOf(longitude));
+					location.setLatitude(latitude);
+					location.setLongitude(longitude);
+					return location;
+				}
+
+			} catch (IOException e) {
+				Log.d("mdb", e.toString());
+			}
+			return null;
+		}// end of doInBackground
+
+		@Override
+		protected void onPostExecute(Location location) {
+			if (location != null) {
+				upperMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(
+						location.getLatitude(), location.getLongitude())));
+				progressDialog.dismiss();
+			} else {
+				Toast.makeText(MainActivity.this, "wrong address format",
+						Toast.LENGTH_SHORT).show();
+				progressDialog.dismiss();
+			}
+		}// end of onPostExecute
+	}// end of GetAdressTask
 
 	// ====================================================================MenuED
 
@@ -276,12 +342,44 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	// OnMyLocationButtonClickListener
 	public boolean onMyLocationButtonClick() {
-		Log.d("mdb", "in onMyLocationButtonClick");
+		// The default behavior is for the camera move such that it is centered
+		// on the user location.
+		// 先確認GPS和network定位的服務有無開啟，locationManager也是另一種開啟GPS定位的方法
+		LocationManager status = (LocationManager) getApplicationContext()
+				.getSystemService(Context.LOCATION_SERVICE);
+		if (status.isProviderEnabled(LocationManager.GPS_PROVIDER)
+				|| status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+			// 連接服務，等待 onConnected時再將locationRequest的設定值交出
+			mLocationClient.connect();
+		} else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					MainActivity.this);
+			builder.setTitle("Waring");
+			builder.setMessage("GPS services are turned off on your device. Do you want to go to yout Location settings now?");
+			builder.setPositiveButton("Yes",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// 這裡的settings是android.provider.Settings
+							startActivity(new Intent(
+									Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+						}
+					});
+			builder.setNegativeButton("No",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+						}
+					});
+			AlertDialog alertDialog = builder.create();
+			alertDialog.setCanceledOnTouchOutside(false);
+			alertDialog.show();
+		}
 		// Return false so that we don't consume the event and the default
 		// behavior still occurs
 		// (the camera animates to the user's current position).
 		return false;
-	}
+	}// end of if
 
 	@Override
 	// OnConnectionFailedListener

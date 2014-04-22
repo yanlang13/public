@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -92,7 +93,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.d("mdb", "onStoping");
 		mapTools.saveTheLastCameraPosition(getApplicationContext(), upperMap,
 				"theLastCameraPosition");
 	}// end of onStop
@@ -245,9 +245,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 							// Ensure that a Geocoder services is available
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
 									&& Geocoder.isPresent()) {
-								new GetAddressTask().execute(
-										MainActivity.this, etSearch.getText()
-												.toString());
+								float maxZoom = upperMap.getMaxZoomLevel();
+								float minZoom = upperMap.getMinZoomLevel();
+								// 輸入地址回傳CamerPosition，四個參數分別為context,
+								// maxZoomLevel, minZoomLevel, addressInput
+								new GetAddressTask().execute(MainActivity.this,
+										maxZoom, minZoom, "台北市信義區市府路一號");
 							}
 						}
 					});
@@ -271,22 +274,23 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private class GetAddressTask extends AddressTask {
 		@Override
 		protected void onPreExecute() {
-			progressDialog.show();
+			// progressDialog.show();
 		}
 
 		@Override
 		protected void onPostExecute(CameraPosition cp) {
+			Log.d("mdb", "onPostExecute");
 			if (cp != null) {
 				upperMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
-				progressDialog.dismiss();
+				// progressDialog.dismiss();
 			} else {
 				Toast.makeText(MainActivity.this, "wrong address format",
 						Toast.LENGTH_SHORT).show();
-				progressDialog.dismiss();
+				// progressDialog.dismiss();
 			}
 		}// end of onPostExecute
 	}// end of GetAddressTask
-	// ====================================================================MenuED
+		// ====================================================================MenuED
 
 	// ====================================================================Overriding
 	@Override

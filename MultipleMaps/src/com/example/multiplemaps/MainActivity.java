@@ -250,7 +250,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 								// 輸入地址回傳CamerPosition，四個參數分別為context,
 								// maxZoomLevel, minZoomLevel, addressInput
 								new GetAddressTask().execute(MainActivity.this,
-										maxZoom, minZoom, "台北市信義區市府路一號");
+										maxZoom, minZoom, etSearch.getText().toString());
 							}
 						}
 					});

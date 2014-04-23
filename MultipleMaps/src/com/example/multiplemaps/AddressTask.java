@@ -28,31 +28,57 @@ public class AddressTask extends AsyncTask<Object, Void, CameraPosition> {
 		Log.d("mdb", "max: "+maxZoom);
 		Log.d("mdb", "min: "+minZoom);
 		String addressInput = (String) params[3];
-		Log.d("mdb", "gmapppp");
-		Log.d("mdb", "gma");
+		Log.d("mdb", "addressInput: " + addressInput);
 		Geocoder geocoder = new Geocoder(context);
 		try {
 			List<Address> result = null;
 			result = geocoder.getFromLocationName(addressInput, 1);
 			Address address = result.get(0);
-//			Log.d("mdb", "CountryName: " + address.getCountryName());
-//			Log.d("mdb", "getCountryCode: " + address.getCountryCode());
-//			Log.d("mdb", "AdminArea: " + address.getAdminArea());
-//			Log.d("mdb", "SubAdminArea: " + address.getSubAdminArea());
-//			Log.d("mdb", "FeatureName: " + address.getFeatureName());
-//			Log.d("mdb", "Phone: " + address.getPhone());
-//			Log.d("mdb", "PostalCode: " + address.getPostalCode());
-//			Log.d("mdb", "Premises: " + address.getPremises());
-//			Log.d("mdb", "Locality: " + address.getLocality());
-//			Log.d("mdb", "SubLocality: " + address.getSubLocality());
-//			Log.d("mdb", "Thoroughfare: " + address.getThoroughfare());
-//			Log.d("mdb", "SubThoroughfare: " + address.getSubThoroughfare());
-//			Log.d("mdb", "FeatureName: " + address.getFeatureName());
-//			Log.d("mdb", "Extras: " + address.getExtras());
-//			Log.d("mdb", "Locale: " + address.getLocale());
-
+			Log.d("mdb", "CountryName: " + address.getCountryName());
+			Log.d("mdb", "getCountryCode: " + address.getCountryCode());
+			Log.d("mdb", "AdminArea: " + address.getAdminArea());
+			Log.d("mdb", "SubAdminArea: " + address.getSubAdminArea());
+			Log.d("mdb", "Locality: " + address.getLocality());
+			Log.d("mdb", "SubLocality: " + address.getSubLocality());
+			Log.d("mdb", "Thoroughfare: " + address.getPostalCode());
+			Log.d("mdb", "Thoroughfare: " + address.getThoroughfare());
+			Log.d("mdb", "SubThoroughfare: " + address.getSubThoroughfare());
+			Log.d("mdb", "Premises: " + address.getPremises());
+			float zoomSize = (maxZoom-minZoom) / 10;
+			float zoom;
+			if (address.getPremises() != null){
+				zoom = zoomSize * 10;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else if (address.getSubThoroughfare() != null){
+				zoom = zoomSize * 9;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else if (address.getPostalCode() != null){
+				zoom = zoomSize * 8;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else if (address.getThoroughfare() != null){
+				zoom = zoomSize * 7;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else if (address.getSubLocality() != null){
+				zoom = zoomSize * 6;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else if (address.getLocality() != null){
+				zoom = zoomSize * 5;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else if (address.getSubAdminArea() != null){
+				zoom = zoomSize * 4;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else if (address.getAdminArea() != null){
+				zoom = zoomSize * 3;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else if (address.getCountryName() != null){
+				zoom = zoomSize * 2;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}else{
+				zoom = maxZoom;
+				Log.d("mdb", "zoomSize: "+ zoom);
+			}
+			
 			LatLng target = new LatLng(address.getLatitude(), address.getLongitude());
-			float zoom = 1;
 			
 			CameraPosition cp = CameraPosition.fromLatLngZoom(target, zoom);
 			return cp;

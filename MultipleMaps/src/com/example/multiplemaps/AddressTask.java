@@ -1,90 +1,84 @@
 package com.example.multiplemaps;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
-
-import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import org.json.JSONException;
+import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 /**
  * 輸入地址回傳CamerPosition，四個參數分別為context, maxZoomLevel, minZoomLevel, addressInput
  */
-public class AddressTask extends AsyncTask<Object, Void, CameraPosition> {
+public class AddressTask extends AsyncTask<Object, Void, LatLngBounds> {
 	@Override
-	protected CameraPosition doInBackground(Object... params) {
+	protected LatLngBounds doInBackground(Object... params) {
 		Log.d("mdb", "doInBacjground");
 		// 需要return null or CameraPosition
 		// 用params[i]來抓取輸入的值
-		Context context = (Context) params[0];
-		float maxZoom = (float) params[1];
-		float minZoom = (float) params[2];
-		Log.d("mdb", "max: "+maxZoom);
-		Log.d("mdb", "min: "+minZoom);
-		String addressInput = (String) params[3];
-		Log.d("mdb", "addressInput: " + addressInput);
-		Geocoder geocoder = new Geocoder(context);
+		String addressInput = (String) params[0];
+
 		try {
-			List<Address> result = null;
-			result = geocoder.getFromLocationName(addressInput, 1);
-			Address address = result.get(0);
-			Log.d("mdb", "CountryName: " + address.getCountryName());
-			Log.d("mdb", "getCountryCode: " + address.getCountryCode());
-			Log.d("mdb", "AdminArea: " + address.getAdminArea());
-			Log.d("mdb", "SubAdminArea: " + address.getSubAdminArea());
-			Log.d("mdb", "Locality: " + address.getLocality());
-			Log.d("mdb", "SubLocality: " + address.getSubLocality());
-			Log.d("mdb", "Thoroughfare: " + address.getPostalCode());
-			Log.d("mdb", "Thoroughfare: " + address.getThoroughfare());
-			Log.d("mdb", "SubThoroughfare: " + address.getSubThoroughfare());
-			Log.d("mdb", "Premises: " + address.getPremises());
-			float zoomSize = (maxZoom-minZoom) / 10;
-			float zoom;
-			if (address.getPremises() != null){
-				zoom = zoomSize * 10;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else if (address.getSubThoroughfare() != null){
-				zoom = zoomSize * 9;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else if (address.getPostalCode() != null){
-				zoom = zoomSize * 8;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else if (address.getThoroughfare() != null){
-				zoom = zoomSize * 7;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else if (address.getSubLocality() != null){
-				zoom = zoomSize * 6;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else if (address.getLocality() != null){
-				zoom = zoomSize * 5;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else if (address.getSubAdminArea() != null){
-				zoom = zoomSize * 4;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else if (address.getAdminArea() != null){
-				zoom = zoomSize * 3;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else if (address.getCountryName() != null){
-				zoom = zoomSize * 2;
-				Log.d("mdb", "zoomSize: "+ zoom);
-			}else{
-				zoom = maxZoom;
-				Log.d("mdb", "zoomSize: "+ zoom);
+			
+			String address = URLEncoder.encode(addressInput, "UTF-8");
+			final String urlStr = String
+					.format("http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false",
+							address);
+			// 定義url
+			URL url = new URL(urlStr);
+			// 連線
+			URLConnection connection = url.openConnection();
+
+			// 將url回傳的結果，寫成StringBuilder
+			BufferedReader buffer = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			StringBuilder stringBuilder = new StringBuilder();
+			String line;
+			while ((line = buffer.readLine()) != null) {
+				stringBuilder.append(line);
 			}
+			//轉成JSONObject format
+			JSONObject data = new JSONObject(stringBuilder.toString());
 			
-			LatLng target = new LatLng(address.getLatitude(), address.getLongitude());
+			//取值，array(results)下的第一個內容下的geometry中的viewport-southwest
+			JSONObject jSouthwest = data.getJSONArray("results")
+					.getJSONObject(0).getJSONObject("geometry")
+					.getJSONObject("viewport").getJSONObject("southwest");
 			
-			CameraPosition cp = CameraPosition.fromLatLngZoom(target, zoom);
-			return cp;
-		} catch (IOException e) {
-			Log.d("mdb", e.toString());
+			
+			JSONObject jNortheast = data.getJSONArray("results")
+					.getJSONObject(0).getJSONObject("geometry")
+					.getJSONObject("viewport").getJSONObject("northeast");
+			
+			//轉存為latLng是為了放入bounds，再return
+			LatLng southwest = new LatLng(jSouthwest.getDouble("lat"),
+					jSouthwest.getDouble("lng"));
+			LatLng northeast = new LatLng(jNortheast.getDouble("lat"),
+					jNortheast.getDouble("lng"));
+
+			LatLngBounds bounds = new LatLngBounds(southwest, northeast);
+			return bounds;
+
+		} catch (UnsupportedEncodingException e) {// URLEncoder
+			e.printStackTrace();
+		} catch (MalformedURLException e) { // URL
+			e.printStackTrace();
+		} catch (IOException e) { // URLConnection
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {// JSONObject
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 		return null;
 	}// end of doInBackground
 }// end of GetAdressTask

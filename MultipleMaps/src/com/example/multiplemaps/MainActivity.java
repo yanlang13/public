@@ -1,11 +1,6 @@
 package com.example.multiplemaps;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-
-import javax.security.auth.PrivateCredentialPermission;
-
 import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -13,7 +8,6 @@ import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailed
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -24,30 +18,26 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
-import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.provider.ContactsContract.Profile;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ListPopupWindow;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements ConnectionCallbacks,
@@ -245,12 +235,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 							// Ensure that a Geocoder services is available
 							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD
 									&& Geocoder.isPresent()) {
-								float maxZoom = upperMap.getMaxZoomLevel();
-								float minZoom = upperMap.getMinZoomLevel();
-								// 輸入地址回傳CamerPosition，四個參數分別為context,
-								// maxZoomLevel, minZoomLevel, addressInput
-								new GetAddressTask().execute(MainActivity.this,
-										maxZoom, minZoom, etSearch.getText().toString());
+								new GetAddressTask().execute(etSearch.getText().toString());
 							}
 						}
 					});
@@ -259,7 +244,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-
 						}
 					});
 			AlertDialog alertDialog = alertBuilder.create();
@@ -278,10 +262,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		}
 
 		@Override
-		protected void onPostExecute(CameraPosition cp) {
+		protected void onPostExecute(LatLngBounds bounds) {
 			Log.d("mdb", "onPostExecute");
-			if (cp != null) {
-				upperMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+			if (bounds != null) {
+				//bounds, pidding
+				upperMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 				// progressDialog.dismiss();
 			} else {
 				Toast.makeText(MainActivity.this, "wrong address format",

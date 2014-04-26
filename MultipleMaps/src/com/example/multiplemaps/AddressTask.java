@@ -21,7 +21,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 public class AddressTask extends AsyncTask<Object, Void, LatLngBounds> {
 	@Override
 	protected LatLngBounds doInBackground(Object... params) {
-		Log.d("mdb", "doInBacjground");
 		// 需要return null or CameraPosition
 		// 用params[i]來抓取輸入的值
 		String addressInput = (String) params[0];

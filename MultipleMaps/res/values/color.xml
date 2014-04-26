@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="android_bule"> #32b7e8</color>
+    <color name="android_blue"> #32b7e8</color>
     <color name="lava_red">  #E42217</color>
 
 </resources>

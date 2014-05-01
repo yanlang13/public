@@ -15,4 +15,6 @@ public class DrawerListDetails {
 		this.title = title;
 		this.activityClass = activityClass;
 	}// end of DrawerListDetials
+	
+	
 }// end of DrawerListDetials

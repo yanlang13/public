@@ -49,6 +49,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -79,7 +81,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private DrawerLayout drawerLayout;
 	private ListView drawerList; // listView的view
 	private ActionBarDrawerToggle actionBarDrawerToggle; // drawerLayout的listener
-	private CharSequence title; // action bar title
 
 	// ====================================================================Declared
 
@@ -138,7 +139,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 	// ====================================================================onCreating
 	private void setLeftDrawer() {
-		title = getTitle(); // 用來讓user知道目前的所在位置
 		drawerTitles = getResources().getStringArray(R.array.drawer_array);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
@@ -151,9 +151,18 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		// set up the drawer's list view with items and click listener
 		drawerList.setAdapter(new DrawerArrayAdapter(this, DrawerList.LIST));
-//		drawerList.setAdapter(new ArrayAdapter<String>(this,
-//				R.layout.drawer_list_item, drawerTitles));
-		drawerList.setOnItemClickListener(new DrawerItemClickListener());
+		// drawerList.setAdapter(new ArrayAdapter<String>(this,
+		// R.layout.drawer_list_item, drawerTitles));
+		drawerList.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				if (position == 0) {// layoutSetting
+					Log.d("mdb", "163");
+					startActivity(new Intent(MainActivity.this, LayoutSetting.class));
+				}
+			}
+		});// end of drawerList.setOnItemClickListener
 
 		// enable ActionBar app icon to behave as action to toggle nav drawer
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -169,13 +178,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				R.drawable.ic_drawer, R.string.drawer_open,
 				R.string.drawer_close) {
 			public void onDrawerOpened(View drawerView) {
-				getActionBar().setTitle(title);
 				// 因為drawer所以改變了menu，會再call onCreateOptionsMenu
 				invalidateOptionsMenu();
 			}
 
 			public void onDrawerClosed(View drawerView) {
-				getActionBar().setTitle(title);
 				// 因為drawer所以改變了menu，會再call onCreateOptionsMenu
 				invalidateOptionsMenu();
 			}

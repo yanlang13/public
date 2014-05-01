@@ -3,16 +3,16 @@ package com.example.examplelist;
 /**
  * A list of all the demos we have available.
  */
-public final class ExampleDetialsList {
+public final class ExampleDetailsList {
 
 	/** This class should not be instantiated. */
-	private ExampleDetialsList() {
+	private ExampleDetailsList() {
 	}
 
-	public static final ExampleDetails[] EXAMPLES = {
-			new ExampleDetails(R.string.example1_label,
+	public static final ExampleListDetails[] EXAMPLES = {
+			new ExampleListDetails(R.string.example1_label,
 					R.string.example1_description, Example1Activity.class),
-			new ExampleDetails(R.string.camera_label,
+			new ExampleListDetails(R.string.camera_label,
 					R.string.camera_description, CameraActivity.class), };
 
 } // end of ExampleDetialsList{}

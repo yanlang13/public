@@ -1,10 +1,11 @@
 package com.example.multiplemaps;
 
+/*
+ * drawerLayout的list內容
+ */
 public final class DrawerList {
-	private DrawerList(){
+	private DrawerList() {
 	}
-	public static final DrawerListDetials[] LIST ={
-		new DrawerListDetials("Layout", LayoutSetting.class),
-	};
+	public static final DrawerListDetails[] LIST = { new DrawerListDetails(
+			"Layout Setting", LayoutSetting.class)};
 }
-

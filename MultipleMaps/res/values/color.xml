@@ -3,5 +3,6 @@
 
     <color name="android_blue"> #32b7e8</color>
     <color name="lava_red">  #E42217</color>
+    <color name="gray">  #808080</color>
 
 </resources>

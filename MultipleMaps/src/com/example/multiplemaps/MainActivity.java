@@ -75,24 +75,35 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private EditText etSearch; // 接收輸入的地址
 
 	// 有關sliding menu
-	private String[] drawerTitles;
+	private String[] drawerTitles; // listView的內容
 	private DrawerLayout drawerLayout;
-	private ListView drawerList;
-	private ActionBarDrawerToggle actionBarDrawerToggle;
-	private CharSequence title;
+	private ListView drawerList; // listView的view
+	private ActionBarDrawerToggle actionBarDrawerToggle; // drawerLayout的listener
+	private CharSequence title; // action bar title
 
 	// ====================================================================Declared
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d("mdb", "onCreate");
 		setContentView(R.layout.activity_main);
 		progressDialog = new ProgressDialog(this);
-		
-		setLeftDrawer();
-		
 
+		setLeftDrawer();
 	}// end of onCreate
+
+	/**
+	 * When using the ActionBarDrawerToggle, you must call it during
+	 * onPostCreate() and onConfigurationChanged()...
+	 */
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		// 寫入設定的actionBarDrawerToggle
+		actionBarDrawerToggle.syncState();
+	}
 
 	@Override
 	protected void onResume() {
@@ -113,63 +124,76 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onStop() {
 		super.onStop();
+		Log.d("mdb", "onStop");
 		mapTools.saveTheLastCameraPosition(getApplicationContext(), upperMap,
 				"theLastCameraPosition");
 	}// end of onStop
-	
-	// ====================================================================onCreating
-	private void setLeftDrawer(){
-//	title = getTitle(); // 用來讓user知道目前的所在位置
-	drawerTitles = getResources().getStringArray(R.array.drawer_array);
-	drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-	drawerList = (ListView) findViewById(R.id.left_drawer);
-	// set a custom shadow that overlays the main content when the drawer
-	// opens
-	// START=>Push object to x-axis position at the start of its container,
-	// not changing its size.
-	drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-	// set up the drawer's list view with items and click listener
-	drawerList.setAdapter(new ArrayAdapter<String>(this,
-			R.layout.drawer_list_item, drawerTitles));
-	drawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-	// enable ActionBar app icon to behave as action to toggle nav drawer
-	getActionBar().setDisplayHomeAsUpEnabled(true);
-	getActionBar().setHomeButtonEnabled(true);
-
-	// ActionBarDrawerToggle ties together the the proper interactions
-	// between the sliding drawer and the action bar app icon/*
-	// ic_drawer是取代up的drawer
-	// 因為actionBarDrawerToggle已經implement了
-	// DrawerLayout.DrawerListener，所以可以override DrawerListener的method
-	actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-			R.drawable.ic_drawer, R.string.drawer_open,
-			R.string.drawer_close) {
-		public void onDrawerOpened(View drawerView) {
-			getActionBar().setTitle(title);
-			// 因為drawer所以改變了menu，會再call onCreateOptionsMenu
-			invalidateOptionsMenu();
-		}
-
-		public void onDrawerClosed(View drawerView) {
-			getActionBar().setTitle(title);
-			// 因為drawer所以改變了menu，會再call onCreateOptionsMenu
-			invalidateOptionsMenu();
-		}
-	};
-
-	// 讀入actionBarDrawerToggle
-	drawerLayout.setDrawerListener(actionBarDrawerToggle);
-
-	// 未使用，看起來是確保selectItem不會出錯
-	// if (savedInstanceState == null) {
-	// selectItem(0);
-	// }
+	// onConfigurationChanged
+	// 是指狀態改變時(ex:跳出鍵盤、螢幕旋轉等)，會導致activity被destory後再重新設定actionBarDrawerToggle的
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		// Pass any configuration change to the drawer toggls
+		actionBarDrawerToggle.onConfigurationChanged(newConfig);
 	}
-	
+
+	// ====================================================================onCreating
+	private void setLeftDrawer() {
+		title = getTitle(); // 用來讓user知道目前的所在位置
+		drawerTitles = getResources().getStringArray(R.array.drawer_array);
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerList = (ListView) findViewById(R.id.left_drawer);
+		// set a custom shadow that overlays the main content when the drawer
+		// opens
+		// START=>Push object to x-axis position at the start of its container,
+		// not changing its size.
+		drawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
+				GravityCompat.START);
+
+		// set up the drawer's list view with items and click listener
+		drawerList.setAdapter(new DrawerArrayAdapter(this, DrawerList.LIST));
+//		drawerList.setAdapter(new ArrayAdapter<String>(this,
+//				R.layout.drawer_list_item, drawerTitles));
+		drawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		// enable ActionBar app icon to behave as action to toggle nav drawer
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
+
+		// ActionBarDrawerToggle ties together the the proper interactions
+		// between the sliding drawer and the action bar app icon/*
+		// ic_drawer是取代up的drawer
+		// 因為actionBarDrawerToggle已經implement了
+		// DrawerLayout.DrawerListener，所以可以override DrawerListener的method
+		// ic_drawer的顯示位置，是交由.png檔所決定
+		actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+				R.drawable.ic_drawer, R.string.drawer_open,
+				R.string.drawer_close) {
+			public void onDrawerOpened(View drawerView) {
+				getActionBar().setTitle(title);
+				// 因為drawer所以改變了menu，會再call onCreateOptionsMenu
+				invalidateOptionsMenu();
+			}
+
+			public void onDrawerClosed(View drawerView) {
+				getActionBar().setTitle(title);
+				// 因為drawer所以改變了menu，會再call onCreateOptionsMenu
+				invalidateOptionsMenu();
+			}
+		};
+
+		// 讀入actionBarDrawerToggle
+		drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+		// 未使用，看起來是確保selectItem不會出錯
+		// if (savedInstanceState == null) {
+		// selectItem(0);
+		// }
+	}
+
 	// ====================================================================onCreated
-	
+
 	// ====================================================================onResuming
 	// ===== 確認地圖有無正確讀取
 	private void setUpMapIfNeeded() { // call from onResume()
@@ -298,24 +322,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
 		menu.findItem(R.id.action_search).setVisible(!drawerOpen);
 		return super.onPrepareOptionsMenu(menu);
-	}
-
-	/**
-	 * When using the ActionBarDrawerToggle, you must call it during
-	 * onPostCreate() and onConfigurationChanged()...
-	 */
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		// Sync the toggle state after onRestoreInstanceState has occurred.
-		actionBarDrawerToggle.syncState();
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		// Pass any configuration change to the drawer toggls
-		actionBarDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
 	@Override

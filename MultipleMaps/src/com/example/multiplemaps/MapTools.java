@@ -1,5 +1,7 @@
 package com.example.multiplemaps;
 
+import java.util.HashMap;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -8,8 +10,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapTools {
+	private HashMap<String, Marker> centerMarker = new HashMap<String, Marker>();
 	/**
 	 * 將關閉時的CameraPosition存到SharedPreferences中。
 	 */
@@ -66,4 +71,26 @@ public class MapTools {
 				.setLongitude(map.getProjection().getVisibleRegion().farRight.longitude);
 		return leftLocation.distanceTo(rightLocation);
 	}// end of getViewRegionHorizontalDistance
+	
+	/**
+	 * 做中心marker
+	 */
+	public void displayBoundMarker(GoogleMap map, LatLng position, String snippet) { 
+		MarkerOptions markerOptions = new MarkerOptions();
+		markerOptions.snippet(snippet);
+		markerOptions.title("Input:");
+		markerOptions.infoWindowAnchor(0.5f, 0.5f);
+		markerOptions.position(position);
+
+		// 運用每個 obejct獨有的hashCode作為建立HashMap的Key，可以獨立存取值。
+		String key = String.valueOf(map.hashCode());
+		if (centerMarker.containsKey(key)) {
+			centerMarker.get(key).remove();
+			Marker tempMarker = map.addMarker(markerOptions);
+			centerMarker.put(key, tempMarker);
+		} else {
+			Marker tempMarker = map.addMarker(markerOptions);
+			centerMarker.put(key, tempMarker);
+		}
+	}// end of displayBoundMarker
 }

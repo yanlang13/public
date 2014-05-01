@@ -1,11 +1,7 @@
 package com.example.multiplemaps;
 
 import java.util.HashMap;
-
-import javax.security.auth.PrivateCredentialPermission;
-
 import com.example.multiplemaps.MapTools;
-import com.example.multiplemaps.R.string;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -14,18 +10,12 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -33,7 +23,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -46,12 +35,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -62,13 +49,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private MapTools mapTools = new MapTools();
 	private ProgressDialog progressDialog;
 	private GoogleMap upperMap, lowerMap;
-	private boolean upperMapStopper = false;
-	private boolean lowerMapStopper = false;
-
-	// user的點擊位置，放到HashMap中，目標是一次只顯示一個。
-	private HashMap<String, Circle> userCircle = new HashMap<String, Circle>();
-	private HashMap<String, Marker> centerMarker = new HashMap<String, Marker>();
-
+	
 	private LocationClient mLocationClient;
 	// 處理LocationClient的品質
 	private static final LocationRequest REQUEST = LocationRequest.create()
@@ -159,7 +140,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					int position, long id) {
 				if (position == 0) {// layoutSetting
 					Log.d("mdb", "163");
-					startActivity(new Intent(MainActivity.this, LayoutSetting.class));
+					startActivity(new Intent(MainActivity.this,
+							LayoutSetting.class));
 				}
 			}
 		});// end of drawerList.setOnItemClickListener
@@ -211,92 +193,19 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				// 存取後執行
 				mapTools.callTheLastCameraPosition(getApplicationContext(),
 						upperMap, "theLastCameraPosition");
-				syncTwoMapCameraPosition();
-				// 偵測user點擊位置，再顯示小紅點。
-				whereUserClicked(upperMap);
-				whereUserClicked(lowerMap);
-				userUiSetting();
+
+				SyncTools syncTools = new SyncTools(MainActivity.this,
+						upperMap, lowerMap);
+				syncTools.syncTwoMapCameraPosition();
+				syncTools.syncDisplayUserClicked();
+				
+				// userUiSetting
+				upperMap.setMyLocationEnabled(true);
+				upperMap.setOnMyLocationButtonClickListener(this);
 			}// end of if
 		}// end of setUpMapIfNeeded()
 	}
 
-	// ===== 同步移動cameraPosition
-	private void syncTwoMapCameraPosition() { // call from setUpMapIfNeeded()
-		upperMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-			@Override
-			public void onCameraChange(CameraPosition cameraPosition) {
-
-				if (!upperMapStopper) {
-					// 停止lowerMap移動(不停指的話，系統會以為使用者一直操作)
-					lowerMapStopper = true;
-					lowerMap.moveCamera(CameraUpdateFactory
-							.newCameraPosition(cameraPosition));
-				}
-				// 開啟upperMap的移動功能，讓下次移動能改變lower的位置
-				upperMapStopper = false;
-			}
-		}); // end of upperMap.setOnCameraChangeListener
-
-		lowerMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-			@Override
-			public void onCameraChange(CameraPosition cameraPosition) {
-				if (!lowerMapStopper) {
-					upperMapStopper = true;
-					upperMap.moveCamera(CameraUpdateFactory
-							.newCameraPosition(cameraPosition));
-				}
-				lowerMapStopper = false;
-			}
-		});// end of lowerMap.setOnCameraChangeListener
-	}// end of syncTwoMap
-
-	/**
-	 * map onMapClick時，1.顯示點擊位置
-	 */
-	private void whereUserClicked(GoogleMap map) { // call from setUpMapIfNeeded
-		map.setOnMapClickListener(new OnMapClickListener() {
-			@Override
-			public void onMapClick(LatLng geoPoint) {
-				// 1.顯示點擊位置
-				displayUserClicked(upperMap, geoPoint);
-				displayUserClicked(lowerMap, geoPoint);
-			}
-		});
-	}// end of whereUserClicked
-
-	// 在user點擊位置，顯示圓圈。透過location class讓這個circle不至於失控。
-	private void displayUserClicked(GoogleMap map, LatLng geoPoint) { // call
-																		// from
-																		// whereUserClicked
-		float viewDistance = mapTools.getViewRegionHorizontalDistance(map);
-		double radius = viewDistance / 1000;
-
-		CircleOptions circleOptions = new CircleOptions();
-		circleOptions.center(geoPoint);
-		circleOptions.radius(radius);
-		// 要用getResources().getColor(R.color...)，才能正確獨到顏色。
-		// 只用R.color不會顯示錯誤，但不會有顏色。
-		circleOptions.fillColor(getResources().getColor(R.color.lava_red));
-		circleOptions.strokeColor(getResources().getColor(R.color.lava_red));
-
-		String key = String.valueOf(map.hashCode());
-		if (userCircle.containsKey(key)) {
-			userCircle.get(key).remove();
-			Circle tempCircle = map.addCircle(circleOptions);
-			userCircle.put(key, tempCircle);
-		} else {
-			Circle tempCircle = map.addCircle(circleOptions);
-			userCircle.put(key, tempCircle);
-		}
-	}
-
-	// userUiSetting
-	private void userUiSetting() { // call from call from setUpMapIfNeeded
-		upperMap.setMyLocationEnabled(true);
-		upperMap.setOnMyLocationButtonClickListener(this);
-	}// end of userUiSetting
-
-	//
 	private void setUpLocationClientIfNeeded() { // call from onResume
 		if (mLocationClient == null) {
 			// ConnectionCallback and OnConnectionFailedListener
@@ -389,8 +298,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				// bounds, pidding
 				upperMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds,
 						0));
-				displayBoundMarker(upperMap, bounds.getCenter());
-				displayBoundMarker(lowerMap, bounds.getCenter());
+				String snippet = etSearch.getText().toString();
+				LatLng position = bounds.getCenter();
+				mapTools.displayBoundMarker(upperMap, position, snippet);
+				mapTools.displayBoundMarker(lowerMap, position, snippet);
 				progressDialog.dismiss();
 			} else {
 				Toast.makeText(MainActivity.this, "wrong address format",
@@ -398,30 +309,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				progressDialog.dismiss();
 			}
 		}// end of onPostExecute
-
-		/**
-		 * 做中心marker
-		 */
-		private void displayBoundMarker(GoogleMap map, LatLng position) { // call
-																			// from
-																			// onPostExecute
-			MarkerOptions markerOptions = new MarkerOptions();
-			markerOptions.snippet(etSearch.getText().toString());
-			markerOptions.title("Input:");
-			markerOptions.infoWindowAnchor(0.5f, 0.5f);
-			markerOptions.position(position);
-
-			// 運用每個 obejct獨有的hashCode作為建立HashMap的Key，可以獨立存取值。
-			String key = String.valueOf(map.hashCode());
-			if (centerMarker.containsKey(key)) {
-				centerMarker.get(key).remove();
-				Marker tempMarker = map.addMarker(markerOptions);
-				centerMarker.put(key, tempMarker);
-			} else {
-				Marker tempMarker = map.addMarker(markerOptions);
-				centerMarker.put(key, tempMarker);
-			}
-		}// end of displayBoundMarker
 	}// end of GetAddressTask
 
 	// ====================================================================MenuED

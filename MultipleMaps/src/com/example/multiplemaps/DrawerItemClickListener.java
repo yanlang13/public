@@ -13,6 +13,7 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener {
 		Log.d("mdb", "onItemClicking");
 		Toast.makeText(view.getContext(), ""+position, Toast.LENGTH_SHORT).show();
 		Log.d("mdb", "onItemClicked");
+		
 	}// end of onItemClick
 
 }// end of DrawerItemClickListener

@@ -86,7 +86,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("mdb", "onCreate");
 		setContentView(R.layout.activity_main);
 		progressDialog = new ProgressDialog(this);
 
@@ -124,7 +123,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.d("mdb", "onStop");
 		mapTools.saveTheLastCameraPosition(getApplicationContext(), upperMap,
 				"theLastCameraPosition");
 	}// end of onStop

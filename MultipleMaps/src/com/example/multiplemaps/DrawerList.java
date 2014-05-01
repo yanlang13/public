@@ -7,5 +7,5 @@ public final class DrawerList {
 	private DrawerList() {
 	}
 	public static final DrawerListDetails[] LIST = { new DrawerListDetails(
-			"Layout Setting", LayoutSetting.class)};
+			"Layout Setting",R.drawable.drawer_layout_setting, LayoutSetting.class)};
 }

@@ -8,8 +8,10 @@ import android.app.Activity;
  */
 public class DrawerListDetails {
 	public final String title;
+	public final int image;
 	public final Class<? extends Activity> activityClass;
-	public DrawerListDetails(String title, Class<? extends Activity> activityClass){
+	public DrawerListDetails(String title,int image, Class<? extends Activity> activityClass){
+		this.image = image;
 		this.title = title;
 		this.activityClass = activityClass;
 	}// end of DrawerListDetials

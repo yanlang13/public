@@ -1,6 +1,5 @@
 package com.example.multiplemaps;
 
-import java.util.HashMap;
 import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -14,8 +13,6 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -58,7 +55,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private EditText etSearch; // 接收輸入的地址
 
 	// 有關sliding menu
-	private String[] drawerTitles; // listView的內容
 	private DrawerLayout drawerLayout;
 	private ListView drawerList; // listView的view
 	private ActionBarDrawerToggle actionBarDrawerToggle; // drawerLayout的listener
@@ -120,7 +116,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 	// ====================================================================onCreating
 	private void setLeftDrawer() {
-		drawerTitles = getResources().getStringArray(R.array.drawer_array);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerList = (ListView) findViewById(R.id.left_drawer);
 		// set a custom shadow that overlays the main content when the drawer
@@ -169,7 +164,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				invalidateOptionsMenu();
 			}
 		};
-
 		// 讀入actionBarDrawerToggle
 		drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
@@ -177,7 +171,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		// if (savedInstanceState == null) {
 		// selectItem(0);
 		// }
-	}
+	}// end of setLeftDrawer()
 
 	// ====================================================================onCreated
 
@@ -373,7 +367,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		// behavior still occurs
 		// (the camera animates to the user's current position).
 		return false;
-	}// end of if
+	}// end of onMyLocationButtonClick()
 
 	@Override
 	// OnConnectionFailedListener

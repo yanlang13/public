@@ -16,8 +16,7 @@ public class LayoutSetting extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.main_null, menu);
 		return true;
 	} // end of onCreateOptionsMenu
 }

@@ -1,22 +1,41 @@
 package com.example.multiplemaps;
 
-
 import android.app.Activity;
+import android.app.TaskStackBuilder;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
+import android.view.MenuItem;
 
 public class LayoutSetting extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.d("mdb", "layoutSetting");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.setting_layout);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main_null, menu);
 		return true;
 	} // end of onCreateOptionsMenu
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			Intent upIntent = NavUtils.getParentActivityIntent(this);
+			if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+				TaskStackBuilder.create(this)
+						.addNextIntentWithParentStack(upIntent)
+						.startActivities();
+			} else {
+				NavUtils.navigateUpFromSameTask(LayoutSetting.this);
+			}
+		}
+		return super.onOptionsItemSelected(item);
+	}// end of onOptionsItemSelected
 }

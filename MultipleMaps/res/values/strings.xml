@@ -4,14 +4,11 @@
     <string name="app_name">Multiple Maps</string>
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
+    <string name="action_display_mode">map display mode:</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-
-    <string-array name="drawer_array">
-        <item>Layout</item>
-        <item>My Data</item>
-        <item>Account</item>
-        <item>Setting</item>
-    </string-array>
+    <string name="single_map_a">show upper map only</string>
+    <string name="single_map_b">show lower map only</string>
+    <string name="show_two_maps">show two maps</string>
 
 </resources>

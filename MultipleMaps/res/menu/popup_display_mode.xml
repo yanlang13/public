@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.multiplemaps.MainActivity" >
+
+    <group android:id="@+id/all_displays" >
+        <item
+            android:id="@+id/single_map_a"
+            android:title="@string/single_map_a"/>
+        <item
+            android:id="@+id/single_map_b"
+            android:title="@string/single_map_b"/>
+        <item
+            android:id="@+id/show_two_maps"
+            android:title="@string/show_two_maps"/>
+    </group>
+
+</menu>

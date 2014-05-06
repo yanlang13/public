@@ -1,9 +1,12 @@
 package com.example.multiplemaps;
 
+import java.util.zip.Inflater;
+
 import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.internal.it;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -32,12 +35,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements ConnectionCallbacks,
@@ -46,7 +52,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private MapTools mapTools = new MapTools();
 	private ProgressDialog progressDialog;
 	private GoogleMap upperMap, lowerMap;
-	
+
 	private LocationClient mLocationClient;
 	// 處理LocationClient的品質
 	private static final LocationRequest REQUEST = LocationRequest.create()
@@ -96,6 +102,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		if (mLocationClient != null) {
 			mLocationClient.disconnect();
 		}
+
 	}// end of onPause()
 
 	@Override
@@ -127,6 +134,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 		// set up the drawer's list view with items and click listener
 		drawerList.setAdapter(new DrawerArrayAdapter(this, DrawerList.LIST));
+
 		// drawerList.setAdapter(new ArrayAdapter<String>(this,
 		// R.layout.drawer_list_item, drawerTitles));
 		drawerList.setOnItemClickListener(new OnItemClickListener() {
@@ -134,9 +142,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				if (position == 0) {// layoutSetting
-					Log.d("mdb", "163");
 					startActivity(new Intent(MainActivity.this,
 							LayoutSetting.class));
+					drawerLayout.closeDrawers();
 				}
 			}
 		});// end of drawerList.setOnItemClickListener
@@ -183,16 +191,20 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					R.id.UpperMap)).getMap();
 			lowerMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.lowerMap)).getMap();
+
 			if (upperMap != null && lowerMap != null) {
-				// 存取後執行
 				mapTools.callTheLastCameraPosition(getApplicationContext(),
 						upperMap, "theLastCameraPosition");
-
+				if (!upperMap.getCameraPosition().equals(
+						lowerMap.getCameraPosition())) {
+					mapTools.callTheLastCameraPosition(getApplicationContext(),
+							lowerMap, "theLastCameraPosition");
+				}
 				SyncTools syncTools = new SyncTools(MainActivity.this,
 						upperMap, lowerMap);
 				syncTools.syncTwoMapCameraPosition();
 				syncTools.syncDisplayUserClicked();
-				
+
 				// userUiSetting
 				upperMap.setMyLocationEnabled(true);
 				upperMap.setOnMyLocationButtonClickListener(this);
@@ -227,8 +239,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		// If the nav drawer is open, hide action items related to the content
 		// view
 		boolean drawerOpen = drawerLayout.isDrawerOpen(drawerList);
-		menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
-		menu.findItem(R.id.action_search).setVisible(!drawerOpen);
+		menu.setGroupVisible(R.id.all_actions, !drawerOpen);
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -275,11 +286,39 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			alertDialog.setCanceledOnTouchOutside(false);
 			alertDialog.show();
 			return true;
-		}
-
+		} else if (id == R.id.action_display_mode) {
+			// popupMenu的第二個parms是顯示的定位點
+			PopupMenu popupMenu = new PopupMenu(MainActivity.this,
+					findViewById(R.id.action_display_mode));
+			// 做一個view
+			MenuInflater inflater = popupMenu.getMenuInflater();
+			inflater.inflate(R.menu.popup_display_mode, popupMenu.getMenu());
+			
+			popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					int id = item.getItemId();
+					if(id == R.id.single_map_a){
+						Log.d("mdb", "single map a");
+						return true;
+					}else if(id == R.id.single_map_b){
+						Log.d("mdb", "single map b");
+						return true;
+					}else if (id == R.id.show_two_maps){
+						Log.d("mdb", "two maps");
+						return true;
+					}
+					return false;
+				}
+			});
+			popupMenu.show();
+		}// end of if id ==
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
 
+	// ====================================================================MenuED
+
+	// ====================================================================Classing
 	private class GetAddressTask extends AddressTask {
 		@Override
 		protected void onPreExecute() {
@@ -305,7 +344,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		}// end of onPostExecute
 	}// end of GetAddressTask
 
-	// ====================================================================MenuED
+	// ====================================================================Classed
 
 	// ====================================================================Overriding
 	@Override

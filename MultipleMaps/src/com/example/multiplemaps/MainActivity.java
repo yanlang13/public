@@ -1,12 +1,9 @@
 package com.example.multiplemaps;
 
-import java.util.zip.Inflater;
-
 import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.internal.it;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -16,12 +13,15 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Geocoder;
 import android.location.Location;
@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		OnConnectionFailedListener {
 	private MapTools mapTools = new MapTools();
 	private ProgressDialog progressDialog;
-	private GoogleMap upperMap, lowerMap;
+	private GoogleMap upperMap, lowerMap, oneMap;
 
 	private LocationClient mLocationClient;
 	// 處理LocationClient的品質
@@ -65,12 +65,30 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private ListView drawerList; // listView的view
 	private ActionBarDrawerToggle actionBarDrawerToggle; // drawerLayout的listener
 
+	// 有關display mode
+	private static final String displayMode = "Dispaly Mode"; // key value
+	private static final int singleUMap = 1; // single map: upperMap
+	private static final int singleLMap = 2;// single map: lowerMap
+	private static final int TwoMap = 3;// show two map
+	private int check;
+	private SharedPreferences sharedSettings;
+	private SharedPreferences.Editor DefaultSettings;
+
 	// ====================================================================Declared
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		sharedSettings = getSharedPreferences("DefaultSettings",
+				Context.MODE_PRIVATE);
+		DefaultSettings = sharedSettings.edit();
+
+		check = sharedSettings.getInt(displayMode, TwoMap);
+		if (check == singleLMap | check == singleUMap) {
+			setContentView(R.layout.single_maps);
+		} else {
+			setContentView(R.layout.two_maps);
+		}
 		progressDialog = new ProgressDialog(this);
 
 		setLeftDrawer();
@@ -91,7 +109,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		setUpMapIfNeeded();
+		check = sharedSettings.getInt(displayMode, TwoMap);
+		if (check == singleLMap | check == singleUMap) {
+			setUpSingleMapIfNeeded();
+		} else {
+			setUpTwoMapIfNeeded();
+		}
 		setUpLocationClientIfNeeded();
 
 	}// end of onResume()
@@ -108,8 +131,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		mapTools.saveTheLastCameraPosition(getApplicationContext(), upperMap,
-				"theLastCameraPosition");
+		if (check == singleLMap | check == singleUMap) {
+			mapTools.saveTheLastCameraPosition(getApplicationContext(), oneMap,
+					"theLastCameraPosition");
+		} else {
+			mapTools.saveTheLastCameraPosition(getApplicationContext(),
+					upperMap, "theLastCameraPosition");
+		}
 	}// end of onStop
 
 	// onConfigurationChanged
@@ -184,8 +212,18 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	// ====================================================================onCreated
 
 	// ====================================================================onResuming
+
+	private void setUpSingleMapIfNeeded() {
+		if (oneMap == null) {
+			oneMap = ((MapFragment) getFragmentManager().findFragmentById(
+					R.id.OneMap)).getMap();
+		}
+		oneMap.setMyLocationEnabled(true);
+		oneMap.setOnMyLocationButtonClickListener(this);
+	}
+
 	// ===== 確認地圖有無正確讀取
-	private void setUpMapIfNeeded() { // call from onResume()
+	private void setUpTwoMapIfNeeded() { // call from onResume()
 		if (upperMap == null || lowerMap == null) {
 			upperMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.UpperMap)).getMap();
@@ -293,25 +331,33 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			// 做一個view
 			MenuInflater inflater = popupMenu.getMenuInflater();
 			inflater.inflate(R.menu.popup_display_mode, popupMenu.getMenu());
-			
+			popupMenu.show();
+
 			popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
 					int id = item.getItemId();
-					if(id == R.id.single_map_a){
-						Log.d("mdb", "single map a");
+					if (id == R.id.single_upperMap) {
+						DefaultSettings.putInt(displayMode, singleUMap);
+						DefaultSettings.commit();
+						// recreate用以重新啟動activity，會進入onStop的流程
+						recreate();
 						return true;
-					}else if(id == R.id.single_map_b){
-						Log.d("mdb", "single map b");
+					} else if (id == R.id.single_lowerMap) {
+						DefaultSettings.putInt(displayMode, singleLMap);
+						DefaultSettings.commit();
+						recreate();
 						return true;
-					}else if (id == R.id.show_two_maps){
-						Log.d("mdb", "two maps");
+					} else if (id == R.id.show_two_maps) {
+						DefaultSettings.putInt(displayMode, TwoMap);
+						DefaultSettings.commit();
+						recreate();
 						return true;
 					}
 					return false;
 				}
 			});
-			popupMenu.show();
+
 		}// end of if id ==
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
@@ -345,6 +391,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	}// end of GetAddressTask
 
 	// ====================================================================Classed
+
+	// ====================================================================MethodING
+
+	// ====================================================================MethodED
 
 	// ====================================================================Overriding
 	@Override

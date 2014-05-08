@@ -13,6 +13,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapTools {
+	
+	//using in save and call TheLastCameraPosition
+	private static final String Lat = "Latitude";
+	private static final String Lng = "Langitude";
+	private static final String Tilt = "Tilt";
+	private static final String Bearing = "Bearing";
+	private static final String Zoom = "Zoom";
+	
+	
 	private HashMap<String, Marker> centerMarker = new HashMap<String, Marker>();
 	/**
 	 * 將關閉時的CameraPosition存到SharedPreferences中。
@@ -23,11 +32,11 @@ public class MapTools {
 		SharedPreferences sp = context.getSharedPreferences(SPName,
 				Context.MODE_PRIVATE);
 		SharedPreferences.Editor spe = sp.edit();
-		spe.putString("latitude", String.valueOf(cp.target.latitude));
-		spe.putString("longitude", String.valueOf(cp.target.longitude));
-		spe.putFloat("tilt", cp.tilt);
-		spe.putFloat("bearing", cp.bearing);
-		spe.putFloat("zoom", cp.zoom);
+		spe.putString(Lat, String.valueOf(cp.target.latitude));
+		spe.putString(Lng, String.valueOf(cp.target.longitude));
+		spe.putFloat(Tilt, cp.tilt);
+		spe.putFloat(Bearing, cp.bearing);
+		spe.putFloat(Zoom, cp.zoom);
 		spe.commit();
 	} // end of saveTheLastCameraPosition()
 
@@ -38,12 +47,12 @@ public class MapTools {
 			String SPName) { // call from setUpMapIfNeeded()
 		SharedPreferences sp = context.getSharedPreferences(SPName,
 				Context.MODE_PRIVATE);
-		double latitude = Double.valueOf(sp.getString("latitude", "0"));
-		double longitude = Double.valueOf(sp.getString("longitude", "0"));
+		double latitude = Double.valueOf(sp.getString(Lat, "0"));
+		double longitude = Double.valueOf(sp.getString(Lng, "0"));
 		
-		float tilt = sp.getFloat("tilt", 0);
-		float bearing = sp.getFloat("bearing", 0);
-		float zoom = sp.getFloat("zoom", 0);
+		float tilt = sp.getFloat(Tilt, 0);
+		float bearing = sp.getFloat(Bearing, 0);
+		float zoom = sp.getFloat(Zoom, 0);
 		LatLng target = new LatLng(latitude, longitude);
 		CameraPosition cp = new CameraPosition(target, zoom, tilt, bearing);
 		map.moveCamera(CameraUpdateFactory.newCameraPosition(cp));

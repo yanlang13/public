@@ -4,11 +4,11 @@
 
     <group android:id="@+id/all_displays" >
         <item
-            android:id="@+id/single_map_a"
-            android:title="@string/single_map_a"/>
+            android:id="@+id/single_upperMap"
+            android:title="@string/single_upperMap"/>
         <item
-            android:id="@+id/single_map_b"
-            android:title="@string/single_map_b"/>
+            android:id="@+id/single_lowerMap"
+            android:title="@string/single_lowerMap"/>
         <item
             android:id="@+id/show_two_maps"
             android:title="@string/show_two_maps"/>

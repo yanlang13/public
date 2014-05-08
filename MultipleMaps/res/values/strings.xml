@@ -7,8 +7,8 @@
     <string name="action_display_mode">map display mode:</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="single_map_a">show upper map only</string>
-    <string name="single_map_b">show lower map only</string>
+    <string name="single_upperMap">show upper map only</string>
+    <string name="single_lowerMap">show lower map only</string>
     <string name="show_two_maps">show two maps</string>
 
 </resources>

@@ -44,7 +44,7 @@ import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements ConnectionCallbacks,
+public class CopyOfMainActivity extends Activity implements ConnectionCallbacks,
 		LocationListener, OnMyLocationButtonClickListener,
 		OnConnectionFailedListener {
 	private MapTools mapTools = new MapTools();
@@ -163,7 +163,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				if (position == 0) {// layoutSetting
-					startActivity(new Intent(MainActivity.this,
+					startActivity(new Intent(CopyOfMainActivity.this,
 							LayoutSetting.class));
 					drawerLayout.closeDrawers();
 				}
@@ -231,7 +231,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					mapTools.callTheLastCameraPosition(getApplicationContext(),
 							lowerMap, "theLastCameraPosition");
 				}
-				SyncTools syncTools = new SyncTools(MainActivity.this,
+				SyncTools syncTools = new SyncTools(CopyOfMainActivity.this,
 						upperMap, lowerMap);
 				syncTools.syncTwoMapCameraPosition();
 				syncTools.syncDisplayUserClicked();
@@ -288,7 +288,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			return true;
 		} else if (id == R.id.action_search) {
 			AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
-					MainActivity.this);
+					CopyOfMainActivity.this);
 			LayoutInflater inflater = this.getLayoutInflater();
 			View dialogView = inflater.inflate(R.layout.action_search, null);
 			// 取得輸入的地址
@@ -319,7 +319,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			return true;
 		} else if (id == R.id.action_display_mode) {
 			// popupMenu的第二個parms是顯示的定位點
-			PopupMenu popupMenu = new PopupMenu(MainActivity.this,
+			PopupMenu popupMenu = new PopupMenu(CopyOfMainActivity.this,
 					findViewById(R.id.action_display_mode));
 			// 做一個view
 			MenuInflater inflater = popupMenu.getMenuInflater();
@@ -368,21 +368,15 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		protected void onPostExecute(LatLngBounds bounds) {
 			if (bounds != null) {
 				// bounds, pidding
+				upperMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds,
+						0));
 				String snippet = etSearch.getText().toString();
 				LatLng position = bounds.getCenter();
-				if (check == singleLMap | check == singleUMap) {
-					oneMap.moveCamera(CameraUpdateFactory.newLatLngBounds(
-							bounds, 0));
-					mapTools.displayBoundMarker(oneMap, position, snippet);
-				} else {
-					upperMap.moveCamera(CameraUpdateFactory.newLatLngBounds(
-							bounds, 0));
-					mapTools.displayBoundMarker(upperMap, position, snippet);
-					mapTools.displayBoundMarker(lowerMap, position, snippet);
-				}
+				mapTools.displayBoundMarker(upperMap, position, snippet);
+				mapTools.displayBoundMarker(lowerMap, position, snippet);
 				progressDialog.dismiss();
 			} else {
-				Toast.makeText(MainActivity.this, "wrong address format",
+				Toast.makeText(CopyOfMainActivity.this, "wrong address format",
 						Toast.LENGTH_SHORT).show();
 				progressDialog.dismiss();
 			}
@@ -429,7 +423,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			mLocationClient.connect();
 		} else {
 			AlertDialog.Builder builder = new AlertDialog.Builder(
-					MainActivity.this);
+					CopyOfMainActivity.this);
 			builder.setTitle("Waring");
 			builder.setMessage("GPS services are turned off on your device. Do you want to go to yout Location settings now?");
 			builder.setPositiveButton("Yes",

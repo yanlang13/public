@@ -164,6 +164,8 @@ containing a value of this type.
         public static final int zOrderOnTop=0x7f010010;
     }
     public static final class color {
+        public static final int Black=0x7f04000f;
+        public static final int Platinum=0x7f04000d;
         public static final int android_blue=0x7f04000a;
         public static final int common_action_bar_splitter=0x7f040009;
         /**  Sign-in Button Colors 
@@ -177,10 +179,11 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f040006;
         public static final int common_signin_btn_light_text_focused=0x7f040007;
         public static final int common_signin_btn_light_text_pressed=0x7f040005;
-        public static final int common_signin_btn_text_dark=0x7f04000d;
-        public static final int common_signin_btn_text_light=0x7f04000e;
+        public static final int common_signin_btn_text_dark=0x7f040010;
+        public static final int common_signin_btn_text_light=0x7f040011;
         public static final int gray=0x7f04000c;
         public static final int lava_red=0x7f04000b;
+        public static final int white=0x7f04000e;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -230,37 +233,40 @@ containing a value of this type.
         public static final int ic_plusone_tall_off_client=0x7f020021;
     }
     public static final class id {
-        public static final int OneMap=0x7f05000b;
-        public static final int UpperMap=0x7f05000d;
-        public static final int action_display_mode=0x7f050011;
-        public static final int action_search=0x7f050010;
-        public static final int action_settings=0x7f050012;
-        public static final int address_search=0x7f050007;
-        public static final int all_actions=0x7f05000f;
-        public static final int all_displays=0x7f050013;
-        public static final int drawerTitle=0x7f050008;
-        public static final int drawer_layout=0x7f05000a;
-        public static final int go_to=0x7f050006;
+        public static final int action_display_mode=0x7f050014;
+        public static final int action_search=0x7f050013;
+        public static final int action_settings=0x7f050015;
+        public static final int all_actions=0x7f050012;
+        public static final int all_displays=0x7f050016;
+        public static final int drawer_layout=0x7f05000d;
+        public static final int et_search_address_input=0x7f05000c;
         public static final int hybrid=0x7f050004;
-        public static final int left_drawer=0x7f05000c;
-        public static final int lowerMap=0x7f05000e;
+        public static final int left_drawer=0x7f05000f;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
         public static final int satellite=0x7f050002;
-        public static final int show_two_maps=0x7f050016;
-        public static final int single_lowerMap=0x7f050015;
-        public static final int single_upperMap=0x7f050014;
-        public static final int tableRow2=0x7f050005;
+        public static final int show_two_maps=0x7f050019;
+        public static final int single_OneMap=0x7f05000e;
+        public static final int single_lowerMap=0x7f050018;
+        public static final int single_upperMap=0x7f050017;
+        public static final int sp_manage_lowerMap=0x7f050009;
+        public static final int sp_manage_upperMap=0x7f050007;
+        public static final int tableRow2=0x7f05000a;
         public static final int terrain=0x7f050003;
-        public static final int textView1=0x7f050009;
+        public static final int tv_drawer_drawerTitle=0x7f050005;
+        public static final int tv_manage_lowerMap=0x7f050008;
+        public static final int tv_manage_upperMap=0x7f050006;
+        public static final int tv_search_goto=0x7f05000b;
+        public static final int two_lowerMap=0x7f050011;
+        public static final int two_upperMap=0x7f050010;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
     }
     public static final class layout {
-        public static final int action_search=0x7f030000;
-        public static final int drawer_list_item=0x7f030001;
-        public static final int setting_layout=0x7f030002;
+        public static final int drawer_list_item=0x7f030000;
+        public static final int manage_layout=0x7f030001;
+        public static final int search_action=0x7f030002;
         public static final int single_maps=0x7f030003;
         public static final int two_maps=0x7f030004;
     }
@@ -370,6 +376,7 @@ containing a value of this type.
         public static final int common_signin_button_text_long=0x7f060013;
         public static final int drawer_close=0x7f06001f;
         public static final int drawer_open=0x7f06001e;
+        public static final int layout_manage=0x7f060023;
         public static final int show_two_maps=0x7f060022;
         public static final int single_lowerMap=0x7f060021;
         public static final int single_upperMap=0x7f060020;

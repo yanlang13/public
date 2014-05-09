@@ -11,8 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 public class DrawerActivity extends Activity {
 	// 有關sliding menu
@@ -50,7 +50,7 @@ public class DrawerActivity extends Activity {
 					int position, long id) {
 				if (position == 0) {// layoutSetting
 					startActivity(new Intent(getApplicationContext(),
-							LayoutSetting.class));
+							LayoutManage.class));
 				}
 			}
 		});// end of drawerList.setOnItemClickListener

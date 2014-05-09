@@ -48,8 +48,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.multiplemaps.LayoutSetting"
-            android:label="LayoutSetting"
+            android:name="com.example.multiplemaps.LayoutManage"
+            android:label="@string/layout_manage"
             android:screenOrientation="portrait" >
             <meta-data 
             	android:name="android.support.PARENT_ACTIVITY"

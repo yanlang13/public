@@ -68,9 +68,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final int singleUMap = 1; // single map: upperMap
 	private static final int singleLMap = 2;// single map: lowerMap
 	private static final int TwoMap = 3;// show two map
-	private int check;
-	private SharedPreferences sharedSettings;
-	private SharedPreferences.Editor DefaultSettings;
+	private int check; // 用以確認現在地圖顯示模式
+	private SharedPreferences sharedSettings; // 各種UI設定存檔
+	private SharedPreferences.Editor DefaultSettings;// 各種UI設定存檔
 
 	// ====================================================================Declared
 
@@ -107,14 +107,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		check = sharedSettings.getInt(displayMode, TwoMap);
 		if (check == singleLMap | check == singleUMap) {
 			setUpSingleMapIfNeeded();
 		} else {
 			setUpTwoMapIfNeeded();
 		}
 		setUpLocationClientIfNeeded();
-
 	}// end of onResume()
 
 	@Override
@@ -164,7 +162,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					int position, long id) {
 				if (position == 0) {// layoutSetting
 					startActivity(new Intent(MainActivity.this,
-							LayoutSetting.class));
+							LayoutManage.class));
 					drawerLayout.closeDrawers();
 				}
 			}
@@ -209,7 +207,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private void setUpSingleMapIfNeeded() {
 		if (oneMap == null) {
 			oneMap = ((MapFragment) getFragmentManager().findFragmentById(
-					R.id.OneMap)).getMap();
+					R.id.single_OneMap)).getMap();
+			mapTools.callTheLastCameraPosition(getApplicationContext(), oneMap,
+					"theLastCameraPosition");
 		}
 		oneMap.setMyLocationEnabled(true);
 		oneMap.setOnMyLocationButtonClickListener(this);
@@ -219,9 +219,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private void setUpTwoMapIfNeeded() { // call from onResume()
 		if (upperMap == null || lowerMap == null) {
 			upperMap = ((MapFragment) getFragmentManager().findFragmentById(
-					R.id.UpperMap)).getMap();
+					R.id.two_upperMap)).getMap();
 			lowerMap = ((MapFragment) getFragmentManager().findFragmentById(
-					R.id.lowerMap)).getMap();
+					R.id.two_lowerMap)).getMap();
 
 			if (upperMap != null && lowerMap != null) {
 				mapTools.callTheLastCameraPosition(getApplicationContext(),
@@ -290,9 +290,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
 					MainActivity.this);
 			LayoutInflater inflater = this.getLayoutInflater();
-			View dialogView = inflater.inflate(R.layout.action_search, null);
+			View dialogView = inflater.inflate(R.layout.search_action, null);
 			// 取得輸入的地址
-			etSearch = (EditText) dialogView.findViewById(R.id.address_search);
+			etSearch = (EditText) dialogView
+					.findViewById(R.id.et_search_address_input);
 			alertBuilder.setView(dialogView);
 			alertBuilder.setPositiveButton("Search",
 					new DialogInterface.OnClickListener() {

@@ -8,6 +8,6 @@ public final class DrawerList {
 	}
 
 	public static final DrawerListDetails[] LIST = { new DrawerListDetails(
-			"Layout Setting", R.drawable.drawer_layout_setting,
-			LayoutSetting.class) };
+			"Layout Manage", R.drawable.drawer_layout_setting,
+			LayoutManage.class) };
 }

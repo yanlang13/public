@@ -16,7 +16,7 @@
             android:orientation="vertical" >
 
             <fragment
-                android:id="@+id/UpperMap"
+                android:id="@+id/two_upperMap"
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
@@ -34,7 +34,7 @@
                 android:background="@color/lava_red" />
 
             <fragment
-                android:id="@+id/lowerMap"
+                android:id="@+id/two_lowerMap"
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

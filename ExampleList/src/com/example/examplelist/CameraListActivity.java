@@ -45,7 +45,7 @@ public class CameraListActivity extends Activity {
 	private ProgressDialog progressDialog;
 	private ListView listView;
 	private TextView textView;
-	private NumberFormat nF; // ±±¨î¸g½n«×ªº¤p¼ÆÂI
+	private NumberFormat nF; // ï¿½ï¿½ï¿½ï¿½gï¿½nï¿½×ªï¿½ï¿½pï¿½ï¿½ï¿½I
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,7 +81,7 @@ public class CameraListActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}// end of on onOptionsItemSelected
 
-	// setUpLongListener()¡A§ìlistViewªºªøÂIÀ»
+	// setUpLongListener()ï¿½Aï¿½ï¿½listViewï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½
 	private void setUpLongListener() { // call from onCreate
 		listView.setOnItemLongClickListener(new OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
@@ -97,13 +97,13 @@ public class CameraListActivity extends Activity {
 		final int listPosition = position;
 		AlertDialog.Builder aDialogBuilder = new AlertDialog.Builder(
 				CameraListActivity.this);
-		// ³z¹Lposition§ì¨ìparse§ì¤U¨Óªº¸ê®Æ
+		// ï¿½zï¿½Lpositionï¿½ï¿½ï¿½parseï¿½ï¿½Uï¿½Óªï¿½ï¿½ï¿½ï¿½
 		final String parseName = arrayListName.get(listPosition);
 
 		aDialogBuilder.setTitle(parseName);
 		final String editSelect[] = new String[] { "Modify", "Delete" };
 
-		// ºÊÅ¥alertDialog
+		// ï¿½ï¿½Å¥alertDialog
 		aDialogBuilder.setItems(editSelect,
 				new DialogInterface.OnClickListener() {
 					@Override
@@ -129,7 +129,7 @@ public class CameraListActivity extends Activity {
 		return aDialogBuilder.create();
 	}// end of setAlertDialog()
 
-	// ³z¹Lname¨Ó§R°£parse¤W­±ªºÀÉ®×
+	// ï¿½zï¿½Lnameï¿½Ó§Rï¿½ï¿½parseï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½É®ï¿½
 	private void delParseData(String parseName) { // call from setUpLongListener
 		final String parseName1 = parseName;
 		ParseQuery<CameraSaveParse> query = ParseQuery
@@ -158,13 +158,13 @@ public class CameraListActivity extends Activity {
 		});// end of query.findInBackground
 	}// end of delParseData
 
-	// {{getDataFromParse()¨ú±oparse¸ê®Æ¡AsetUpListView()©ñ¨ìlsit
-	// ¨ú±oparse¤Wªº¸ê®Æ
+	// {{getDataFromParse()ï¿½ï¿½oparseï¿½ï¿½Æ¡AsetUpListView()ï¿½ï¿½ï¿½lsit
+	// ï¿½ï¿½oparseï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½
 	private void getDataFromParse() { // call from onCreate, delParseData
-		// ParseQuery ¨Ï¥Î subclass CameraSaveParse
+		// ParseQuery ï¿½Ï¥ï¿½ subclass CameraSaveParse
 		// getQuery Creates a new query for the given ParseObject subclass type.
 
-		// ª½±µ²MªÅarray¡A½T«O¨C¦¸parse§ìªº¸ê®Æ³£¯àÂÐ»\ÂÂ¦³ªº
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Mï¿½ï¿½arrayï¿½Aï¿½Tï¿½Oï¿½Cï¿½ï¿½parseï¿½ìªºï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½Ð»\ï¿½Â¦ï¿½ï¿½ï¿½
 		clearAllArrayList();
 
 		ParseQuery<CameraSaveParse> query = ParseQuery
@@ -173,7 +173,7 @@ public class CameraListActivity extends Activity {
 		query.findInBackground(new FindCallback<CameraSaveParse>() {
 			@Override
 			public void done(List<CameraSaveParse> results, ParseException e) {
-				// ½T»{Parse¨S¦³°ÝÃD
+				// ï¿½Tï¿½{Parseï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½D
 				if (e == null) {
 					for (CameraSaveParse csp : results) {
 						arrayListName.add(csp.getName());
@@ -196,7 +196,7 @@ public class CameraListActivity extends Activity {
 
 	//
 
-	// ²MªÅ¼È¦sªºarrayList
+	// ï¿½Mï¿½Å¼È¦sï¿½ï¿½arrayList
 	private void clearAllArrayList() { // call from getDataFromParse()
 		arrayListName.clear();
 		arrayListDesc.clear();
@@ -205,23 +205,23 @@ public class CameraListActivity extends Activity {
 		arrayListTime.clear();
 	}// end of clearAllArrayList
 
-	// ±Nparse¸ê®Æ©ñ¨ìlistView
+	// ï¿½Nparseï¿½ï¿½Æ©ï¿½ï¿½listView
 	private void setUpListView() { // call from getDataFromParse()
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
 		for (int i = 0; i < arrayListName.size(); i++) {
-			HashMap<String, Object> item = new HashMap<>();
+			HashMap<String, Object> item = new HashMap<String, Object>();
 			item.put("Name", "Name: " + arrayListName.get(i));
 			item.put("Desc", "Description: \n" + arrayListDesc.get(i));
 			item.put("Time", arrayListTime.get(i));
 
-			// ¥_½n«n½nÂà´«
+			// ï¿½_ï¿½nï¿½nï¿½nï¿½à´«
 			if (arrayListLat.get(i) < 0) {
 				item.put("Lat", nF.format(Math.abs(arrayListLat.get(i))) + "S");
 			} else {
 				item.put("Lat", nF.format(arrayListLat.get(i)) + "N");
 			}// end of if
 
-			// ªF¸g¦è¸gÂà´«
+			// ï¿½Fï¿½gï¿½ï¿½gï¿½à´«
 			if (arrayListLng.get(i) < 0) {
 				item.put("Lng", nF.format(Math.abs(arrayListLng.get(i))) + "W");
 			} else {
@@ -230,7 +230,7 @@ public class CameraListActivity extends Activity {
 
 			list.add(item);
 		}// end of for
-			// ·s¼WSimpleAdapter
+			// ï¿½sï¿½WSimpleAdapter
 		String[] from = { "Name", "Desc", "Lat", "Lng", "Time" };
 		int[] to = { R.id.list_name, R.id.list_desc, R.id.list_lat,
 				R.id.list_lng, R.id.list_time };
@@ -239,7 +239,7 @@ public class CameraListActivity extends Activity {
 		simpleAdapter = new SimpleAdapter(getApplication(), list,
 				R.layout.camera_list_view, from, to);
 
-		// ListActivity³]©wadapter
+		// ListActivityï¿½]ï¿½wadapter
 		listView.setAdapter(simpleAdapter);
 	}// end of setListView
 		// }}

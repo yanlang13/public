@@ -10,5 +10,6 @@
     <string name="single_upperMap">show upper map only</string>
     <string name="single_lowerMap">show lower map only</string>
     <string name="show_two_maps">show two maps</string>
+    <string name="layout_manage">Layout Manage</string>
 
 </resources>

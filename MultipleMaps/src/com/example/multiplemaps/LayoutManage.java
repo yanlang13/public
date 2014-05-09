@@ -8,11 +8,11 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class LayoutSetting extends Activity {
+public class LayoutManage extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.setting_layout);
+		setContentView(R.layout.manage_layout);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 	}
@@ -33,7 +33,7 @@ public class LayoutSetting extends Activity {
 						.addNextIntentWithParentStack(upIntent)
 						.startActivities();
 			} else {
-				NavUtils.navigateUpFromSameTask(LayoutSetting.this);
+				NavUtils.navigateUpFromSameTask(LayoutManage.this);
 			}
 		}
 		return super.onOptionsItemSelected(item);

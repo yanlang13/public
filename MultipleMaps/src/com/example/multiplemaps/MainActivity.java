@@ -1,5 +1,10 @@
 package com.example.multiplemaps;
 
+import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_HYBRID;
+import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NONE;
+import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
+import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE;
+import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_TERRAIN;
 import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -63,26 +68,24 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private ListView drawerList; // listView的view
 	private ActionBarDrawerToggle actionBarDrawerToggle; // drawerLayout的listener
 
+	private DefaultSettings ds; // 存取各種基本設定 
+
 	// 有關display mode
-	private static final String displayMode = "Dispaly Mode"; // key value
-	private static final int singleUMap = 1; // single map: upperMap
-	private static final int singleLMap = 2;// single map: lowerMap
-	private static final int TwoMap = 3;// show two map
-	private int check; // 用以確認現在地圖顯示模式
-	private SharedPreferences sharedSettings; // 各種UI設定存檔
-	private SharedPreferences.Editor DefaultSettings;// 各種UI設定存檔
+	private static final int U_MAP = 1; // single map: upperMap
+	private static final int L_MAP = 2;// single map: lowerMap
+	private static final int TWO_MAP = 3;// show two map
+	private int disMode; // 用以確認現在地圖顯示模式
 
 	// ====================================================================Declared
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		sharedSettings = getSharedPreferences("DefaultSettings",
-				Context.MODE_PRIVATE);
-		DefaultSettings = sharedSettings.edit();
-
-		check = sharedSettings.getInt(displayMode, TwoMap);
-		if (check == singleLMap | check == singleUMap) {
+		
+		ds = new DefaultSettings(MainActivity.this);
+		disMode= ds.getDisMode();
+		
+		if (disMode == L_MAP | disMode == U_MAP) {
 			setContentView(R.layout.single_maps);
 		} else {
 			setContentView(R.layout.two_maps);
@@ -107,7 +110,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (check == singleLMap | check == singleUMap) {
+		if (disMode == L_MAP | disMode == U_MAP) {
 			setUpSingleMapIfNeeded();
 		} else {
 			setUpTwoMapIfNeeded();
@@ -127,7 +130,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (check == singleLMap | check == singleUMap) {
+		if (disMode == L_MAP | disMode == U_MAP) {
 			mapTools.saveTheLastCameraPosition(getApplicationContext(), oneMap,
 					"theLastCameraPosition");
 		} else {
@@ -235,7 +238,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 						upperMap, lowerMap);
 				syncTools.syncTwoMapCameraPosition();
 				syncTools.syncDisplayUserClicked();
-
+				
 				// userUiSetting
 				upperMap.setMyLocationEnabled(true);
 				upperMap.setOnMyLocationButtonClickListener(this);
@@ -332,19 +335,16 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				public boolean onMenuItemClick(MenuItem item) {
 					int id = item.getItemId();
 					if (id == R.id.single_upperMap) {
-						DefaultSettings.putInt(displayMode, singleUMap);
-						DefaultSettings.commit();
+						ds.setDisMode(U_MAP);
 						// recreate用以重新啟動activity，會進入onStop的流程
 						recreate();
 						return true;
 					} else if (id == R.id.single_lowerMap) {
-						DefaultSettings.putInt(displayMode, singleLMap);
-						DefaultSettings.commit();
+						ds.setDisMode(L_MAP);
 						recreate();
 						return true;
 					} else if (id == R.id.show_two_maps) {
-						DefaultSettings.putInt(displayMode, TwoMap);
-						DefaultSettings.commit();
+						ds.setDisMode(TWO_MAP);
 						recreate();
 						return true;
 					}
@@ -371,7 +371,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				// bounds, pidding
 				String snippet = etSearch.getText().toString();
 				LatLng position = bounds.getCenter();
-				if (check == singleLMap | check == singleUMap) {
+				if (disMode == L_MAP | disMode == U_MAP) {
 					oneMap.moveCamera(CameraUpdateFactory.newLatLngBounds(
 							bounds, 0));
 					mapTools.displayBoundMarker(oneMap, position, snippet);

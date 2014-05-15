@@ -5,10 +5,13 @@ import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NONE;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_TERRAIN;
+
 import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.internal.dg;
+import com.google.android.gms.internal.dv;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -24,8 +27,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -56,6 +59,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private ProgressDialog progressDialog;
 	private GoogleMap upperMap, lowerMap, oneMap;
 
+	private final String THE_LAST_CP = "TheLastCameraPosition";
+
 	private LocationClient mLocationClient;
 	// 處理LocationClient的品質
 	private static final LocationRequest REQUEST = LocationRequest.create()
@@ -68,7 +73,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private ListView drawerList; // listView的view
 	private ActionBarDrawerToggle actionBarDrawerToggle; // drawerLayout的listener
 
-	private DefaultSettings ds; // 存取各種基本設定 
+	private DefaultSettings ds; // 存取各種基本設定
 
 	// 有關display mode
 	private static final int U_MAP = 1; // single map: upperMap
@@ -76,15 +81,16 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final int TWO_MAP = 3;// show two map
 	private int disMode; // 用以確認現在地圖顯示模式
 
+	private DBHelper db = null;
+
 	// ====================================================================Declared
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		ds = new DefaultSettings(MainActivity.this);
-		disMode= ds.getDisMode();
-		
+		disMode = ds.getDisMode();
+
 		if (disMode == L_MAP | disMode == U_MAP) {
 			setContentView(R.layout.single_maps);
 		} else {
@@ -93,6 +99,17 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		progressDialog = new ProgressDialog(this);
 
 		setLeftDrawer();
+		MainActivity.this.deleteDatabase("MultiMaps.db");
+		db = new DBHelper(this);
+		SQLiteDatabase sql = db.getReadableDatabase();
+		
+		db.addLayout(new Layout("GoogleMap Satellite", "SATELLITE", "0"));
+		db.addLayout(new Layout("GoogleMap Hybrid", "Hybrid", "0"));
+		db.getLayout(1);
+		db.getAllLayout();
+		db.close();
+		sql.close();
+		
 	}// end of onCreate
 
 	/**
@@ -132,10 +149,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		super.onStop();
 		if (disMode == L_MAP | disMode == U_MAP) {
 			mapTools.saveTheLastCameraPosition(getApplicationContext(), oneMap,
-					"theLastCameraPosition");
+					THE_LAST_CP);
 		} else {
 			mapTools.saveTheLastCameraPosition(getApplicationContext(),
-					upperMap, "theLastCameraPosition");
+					upperMap, THE_LAST_CP);
 		}
 	}// end of onStop
 
@@ -158,7 +175,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				GravityCompat.START);
 
 		drawerList.setAdapter(new DrawerArrayAdapter(this, DrawerList.LIST));
-
 		drawerList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -201,7 +217,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		// if (savedInstanceState == null) {
 		// selectItem(0);
 		// }
-	}// end of setLeftDrawer()
+	}// end of setLeftDrawer() 
+
 
 	// ====================================================================onCreated
 
@@ -212,7 +229,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			oneMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.single_OneMap)).getMap();
 			mapTools.callTheLastCameraPosition(getApplicationContext(), oneMap,
-					"theLastCameraPosition");
+					THE_LAST_CP);
 		}
 		oneMap.setMyLocationEnabled(true);
 		oneMap.setOnMyLocationButtonClickListener(this);
@@ -228,17 +245,17 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 			if (upperMap != null && lowerMap != null) {
 				mapTools.callTheLastCameraPosition(getApplicationContext(),
-						upperMap, "theLastCameraPosition");
+						upperMap, THE_LAST_CP);
 				if (!upperMap.getCameraPosition().equals(
 						lowerMap.getCameraPosition())) {
 					mapTools.callTheLastCameraPosition(getApplicationContext(),
-							lowerMap, "theLastCameraPosition");
+							lowerMap, THE_LAST_CP);
 				}
 				SyncTools syncTools = new SyncTools(MainActivity.this,
 						upperMap, lowerMap);
 				syncTools.syncTwoMapCameraPosition();
 				syncTools.syncDisplayUserClicked();
-				
+
 				// userUiSetting
 				upperMap.setMyLocationEnabled(true);
 				upperMap.setOnMyLocationButtonClickListener(this);

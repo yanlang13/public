@@ -1,5 +1,9 @@
 package com.example.multiplemaps;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.R.integer;
 import android.app.Activity;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
@@ -7,12 +11,20 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Spinner;
 
 public class LayoutManage extends Activity {
+	private Spinner SPuMap, SPlMap;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.manage_layout);
+		
+		SPuMap = (Spinner) findViewById(R.id.sp_manage_upperMap);
+		SPlMap = (Spinner) findViewById(R.id.sp_manage_lowerMap);
+		
+		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 	}

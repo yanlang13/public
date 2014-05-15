@@ -5,6 +5,8 @@ import java.util.HashMap;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.util.Log;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;

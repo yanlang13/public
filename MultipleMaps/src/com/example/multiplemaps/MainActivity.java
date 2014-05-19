@@ -10,8 +10,7 @@ import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.internal.dg;
-import com.google.android.gms.internal.dv;
+import com.google.android.gms.internal.db;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -81,7 +80,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final int TWO_MAP = 3;// show two map
 	private int disMode; // 用以確認現在地圖顯示模式
 
-	private DBHelper db = null;
+	private DBHelper dbHelper = null;
 
 	// ====================================================================Declared
 
@@ -99,16 +98,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		progressDialog = new ProgressDialog(this);
 
 		setLeftDrawer();
-		MainActivity.this.deleteDatabase("MultiMaps.db");
-		db = new DBHelper(this);
-		SQLiteDatabase sql = db.getReadableDatabase();
-		
-		db.addLayout(new Layout("GoogleMap Satellite", "SATELLITE", "0"));
-		db.addLayout(new Layout("GoogleMap Hybrid", "Hybrid", "0"));
-		db.getLayout(1);
-		db.getAllLayout();
-		db.close();
-		sql.close();
+		dbHelper = new DBHelper(this);
+		OtherTools.copyDBtoSDcard();
 		
 	}// end of onCreate
 
@@ -154,6 +145,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			mapTools.saveTheLastCameraPosition(getApplicationContext(),
 					upperMap, THE_LAST_CP);
 		}
+		dbHelper.close();
 	}// end of onStop
 
 	// onConfigurationChanged
@@ -217,8 +209,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		// if (savedInstanceState == null) {
 		// selectItem(0);
 		// }
-	}// end of setLeftDrawer() 
-
+	}// end of setLeftDrawer()
 
 	// ====================================================================onCreated
 

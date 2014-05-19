@@ -18,13 +18,14 @@ public class Layout {
 
 	@Override
 	public String toString() {
-		return String.format(
-				"[Title: %s, Description: %s, MapURL: %s]", title,
-				desc, mapURL);
+		return String.format("[Id: %s,Title: %s, Description: %s, MapURL: %s]",
+				id, title, desc, mapURL);
 	}
+
 	public String getId() {
 		return id;
 	}
+
 	public String getTitle() {
 		return title;
 	}

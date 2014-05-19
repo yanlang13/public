@@ -2,40 +2,50 @@ package com.example.multiplemaps;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import static android.provider.BaseColumns._ID;
 
 public class DBHelper extends SQLiteOpenHelper {
 	final static int DB_VERSION = 1;
-	final static String DATABASE_NAME = "MultiMaps.db";
-	final static String TABLE_LAYOUT = "Layouts";
-	final static String FIELD_TITLE = "MapTitle";
-	final static String FIELD_DESC = "MapDescription";
-	final static String FIELD_MAP_URl = "MapURL";
+	private static final String DATABASE_NAME = "MultiMaps.db";
+	private static final String TABLE_LAYOUT = "Layouts";
+	private static final String FIELD_TITLE = "MapTitle";
+	private static final String FIELD_DESC = "MapDescription";
+	private static final String FIELD_MAP_URl = "MapURL";
+	private static final String FIELD_ID = "id";
 
-	final static String[] COLUMNS = { FIELD_TITLE, FIELD_DESC, FIELD_MAP_URl };
+	final static String[] COLUMNS = { FIELD_ID, FIELD_TITLE, FIELD_DESC,
+			FIELD_MAP_URl };
 
-	final static String INIT_TABLE = "CREATE TABLE " + TABLE_LAYOUT + " ("
-			+ _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + FIELD_TITLE
+	final static String INIT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_LAYOUT + " ("
+			+ " id INTEGER PRIMARY KEY AUTOINCREMENT, " + FIELD_TITLE
 			+ " TEXT, " + FIELD_DESC + " TEXT, " + FIELD_MAP_URl + " TEXT);";
 
 	final static String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_LAYOUT;
 
+	final static String GOOGLE_MAP = "INSERT INTO " + TABLE_LAYOUT
+			+ " Values ('1','GoogleMap NONE', 'NONE', '1'),"
+			+ "('2','GoogleMap NORMAL', 'NORMAL', '2'),"
+			+ "('3','GoogleMap HYBRID', 'HYBRID', '3'),"
+			+ "('4','GoogleMap SATELLITE', 'SATELLITE', '4'), "
+			+ "('5','GoogleMap TERRAIN', 'TERRAIN', '5');";
+
+	// =================================================================
+
 	public DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DB_VERSION);
+		Log.d("mdb", "DBHepler onCreate");
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// 只有當getRead/Writable...時才會做onCreate
 		db.execSQL(INIT_TABLE);
-
+		db.execSQL(GOOGLE_MAP);
 	}
 
 	@Override
@@ -43,24 +53,22 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d("mdb", "db onUpgrade");
 		db.execSQL(DROP_TABLE);
 	}
-
+	
+	// ==============================================================DBControl
 	public void addLayout(Layout layout) {
-		Log.d("mdb", "addLayout");
 		// 1. get reference to writable DB
 		SQLiteDatabase db = this.getWritableDatabase();
-
 		// 2. create ContentValues to add key "column"/value
 		ContentValues values = new ContentValues();
 		values.put(FIELD_TITLE, layout.getTitle());
 		values.put(FIELD_DESC, layout.getDesc());
 		values.put(FIELD_MAP_URl, layout.getMapURL());
-		
+
 		// 3. insert
 		db.insert(TABLE_LAYOUT, null, values);
 
 		// 4. close
 		db.close();
-		Log.d("mdb", "db.close");
 	}// end of addLayout
 
 	public Layout getLayout(int id) {
@@ -70,7 +78,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		// 2. build query
 		Cursor cursor = db.query(TABLE_LAYOUT, // a. table
 				COLUMNS, // b. column names
-				_ID + "=?", // c. selections
+				FIELD_ID + "=?", // c. selections
 				new String[] { String.valueOf(id) }, // d. selections args
 				null, // e. group by
 				null, // f. having
@@ -83,16 +91,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		// 4. build book object
 		Layout layout = new Layout();
-		layout.setTitle(cursor.getString(0));
-		layout.setDesc(cursor.getString(1));
-		layout.setMapURL(cursor.getString(2));
-
-		Log.d("mdb", "getlayout(" + id + ")" + layout.toString());
+		layout.setId(cursor.getString(0));
+		layout.setTitle(cursor.getString(1));
+		layout.setDesc(cursor.getString(2));
+		layout.setMapURL(cursor.getString(3));
 
 		// 5. return book
 		return layout;
-	}
-
+	}// end of getLayout
+	
+	/*
+	 * return List<Layout>
+	 */
 	public List<Layout> getAllLayout() {
 		List<Layout> layouts = new ArrayList<Layout>();
 		// 1. build the query
@@ -116,10 +126,32 @@ public class DBHelper extends SQLiteOpenHelper {
 				layouts.add(layout);
 			} while (cursor.moveToNext());
 		}
-		Log.d("mdb", layouts.toString());
 
 		// return books
 		return layouts;
-	}
+	}// end of getAllLayout()
 
+	public void deleteLayoutRow(Layout layout) {
+		// 1. get reference to writable DB
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		// 2. delete
+		db.delete(TABLE_LAYOUT, FIELD_ID + " = ?",
+				new String[] { String.valueOf(layout.getId()) });
+
+		// 3. close
+		db.close();
+	}// end of deleteLayout
+
+	public void updateLayoutRow(Layout oldLaout, Layout newLayout) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(FIELD_TITLE, newLayout.getTitle());
+		values.put(FIELD_DESC, newLayout.getDesc());
+		values.put(FIELD_MAP_URl, newLayout.getMapURL());
+		db.update(TABLE_LAYOUT, values, FIELD_ID + "=?",
+				new String[] { String.valueOf(oldLaout.getId()) });
+	}// end of updateLayout
+
+	// ==============================================================DBControled
 }

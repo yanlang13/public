@@ -19,6 +19,8 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <!-- External storage for caching. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <!-- My Location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -44,6 +46,7 @@
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -51,11 +54,9 @@
             android:name="com.example.multiplemaps.LayoutManage"
             android:label="@string/layout_manage"
             android:screenOrientation="portrait" >
-            <meta-data 
-            	android:name="android.support.PARENT_ACTIVITY"
-            	android:value="com.example.multiplemaps.MainActivity"
-            />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.multiplemaps.MainActivity" />
         </activity>
     </application>
-
 </manifest>

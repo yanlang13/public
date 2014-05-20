@@ -36,8 +36,8 @@
             android:id="@+id/tv_manage_descUpper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="10dp"
             android:text="TextView"
             android:textColor="@color/Black"
             android:textSize="14sp" />
@@ -75,6 +75,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
             android:text="TextView"
             android:textColor="@color/Black"
             android:textSize="14sp" />
@@ -93,8 +95,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:textSize="20sp"
-        android:text="Export DB" 
-        android:onClick="exportDatabase"/>
+        android:onClick="exportDatabase"
+        android:text="Export DB"
+        android:textSize="20sp" />
 
 </LinearLayout>

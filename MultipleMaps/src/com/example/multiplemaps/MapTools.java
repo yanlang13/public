@@ -104,5 +104,4 @@ public class MapTools {
 		}
 	}// end of displayBoundMarker
 	
-	
 }

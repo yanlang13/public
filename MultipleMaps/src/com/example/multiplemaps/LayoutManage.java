@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LayoutManage extends Activity {
 	private Spinner spUMap, spLMap;
@@ -33,6 +34,7 @@ public class LayoutManage extends Activity {
 	private ArrayList<String> listURL;
 	private List<Layout> layouts;
 	private DBHelper dbHelper;
+	private DefaultSettings ds;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,46 +43,55 @@ public class LayoutManage extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 
+		spUMap = (Spinner) findViewById(R.id.sp_manage_upperMap);
+		spLMap = (Spinner) findViewById(R.id.sp_manage_lowerMap);
+		tvUMap = (TextView) findViewById(R.id.tv_manage_descUpper);
+		tvLMap = (TextView) findViewById(R.id.tv_manage_descLower);
+
 		listId = new ArrayList<String>();
 		listTitle = new ArrayList<String>();
 		listDesc = new ArrayList<String>();
 		listURL = new ArrayList<String>();
 		layouts = new ArrayList<Layout>();
+
 		setLayoutList();
-		
-		spUMap = (Spinner) findViewById(R.id.sp_manage_upperMap);
-		spLMap = (Spinner) findViewById(R.id.sp_manage_lowerMap);
-		tvUMap = (TextView) findViewById(R.id.tv_manage_descUpper);
-		tvLMap = (TextView) findViewById(R.id.tv_manage_descLower);
-		
-		//下拉前的呈現方式
+		// 下拉前的呈現方式
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_dropdown_item, listTitle);
-		
-		//下拉後的呈現方式
+
+		// 下拉後的呈現方式
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spUMap.setAdapter(adapter);
 		spLMap.setAdapter(adapter);
-		
-		setSpinnerDescription(spUMap, tvUMap);
-		setSpinnerDescription(spLMap, tvLMap);
-		
-		
+
+		SpinnerSelected(spUMap, tvUMap, true);
+		SpinnerSelected(spLMap, tvLMap, false);
+		ds = new DefaultSettings(LayoutManage.this);
+
 	}// end of onCreate
-	private void setSpinnerDescription(Spinner sp,TextView tv){
+
+	private void SpinnerSelected(Spinner sp, TextView tv, boolean upOrNot) {
 		final TextView tv1 = tv;
+		final boolean upOrNot1 = upOrNot;
 		sp.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int position, long id) {
 				tv1.setText(listDesc.get(position));
+				if (upOrNot1) {
+					ds.setUpperMapLayout(listTitle.get(position));
+				}
+				if (!upOrNot1) {
+					ds.setLowerMapLayout(listTitle.get(position));
+				}
 			}
+
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
 	}
-	
+
 	private void setLayoutList() {
 		dbHelper = new DBHelper(LayoutManage.this);
 		layouts = dbHelper.getAllLayout();
@@ -96,7 +107,7 @@ public class LayoutManage extends Activity {
 	public void exportDatabase(View view) {
 		OtherTools.copyDBtoSDcard();
 	}// end of exportDatabase
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main_null, menu);

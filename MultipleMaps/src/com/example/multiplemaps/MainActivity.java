@@ -10,7 +10,6 @@ import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.internal.db;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -27,7 +26,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -80,8 +78,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final int TWO_MAP = 3;// show two map
 	private int disMode; // 用以確認現在地圖顯示模式
 
-	private DBHelper dbHelper = null;
-
 	// ====================================================================Declared
 
 	@Override
@@ -96,10 +92,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			setContentView(R.layout.two_maps);
 		}
 		progressDialog = new ProgressDialog(this);
-
+		
 		setLeftDrawer();
-		dbHelper = new DBHelper(this);
-		OtherTools.copyDBtoSDcard();
+		
 		
 	}// end of onCreate
 
@@ -145,7 +140,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			mapTools.saveTheLastCameraPosition(getApplicationContext(),
 					upperMap, THE_LAST_CP);
 		}
-		dbHelper.close();
 	}// end of onStop
 
 	// onConfigurationChanged

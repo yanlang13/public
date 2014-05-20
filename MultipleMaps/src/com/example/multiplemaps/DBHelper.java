@@ -5,9 +5,11 @@ import java.util.List;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 public class DBHelper extends SQLiteOpenHelper {
 	final static int DB_VERSION = 1;
@@ -21,9 +23,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	final static String[] COLUMNS = { FIELD_ID, FIELD_TITLE, FIELD_DESC,
 			FIELD_MAP_URl };
 
-	final static String INIT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_LAYOUT + " ("
-			+ " id INTEGER PRIMARY KEY AUTOINCREMENT, " + FIELD_TITLE
-			+ " TEXT, " + FIELD_DESC + " TEXT, " + FIELD_MAP_URl + " TEXT);";
+	final static String INIT_TABLE = "CREATE TABLE IF NOT EXISTS "
+			+ TABLE_LAYOUT + " (" + " id INTEGER PRIMARY KEY AUTOINCREMENT, "
+			+ FIELD_TITLE + " TEXT, " + FIELD_DESC + " TEXT, " + FIELD_MAP_URl
+			+ " TEXT);";
 
 	final static String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_LAYOUT;
 
@@ -34,10 +37,13 @@ public class DBHelper extends SQLiteOpenHelper {
 			+ "('4','GoogleMap SATELLITE', 'SATELLITE', '4'), "
 			+ "('5','GoogleMap TERRAIN', 'TERRAIN', '5');";
 
+	private Context context;
+
 	// =================================================================
 
 	public DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DB_VERSION);
+		this.context = context;
 		Log.d("mdb", "DBHepler onCreate");
 	}
 
@@ -53,7 +59,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d("mdb", "db onUpgrade");
 		db.execSQL(DROP_TABLE);
 	}
-	
+
 	// ==============================================================DBControl
 	public void addLayout(Layout layout) {
 		// 1. get reference to writable DB
@@ -74,8 +80,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Layout getLayout(int id) {
 		// 1. get reference to readable DB
 		SQLiteDatabase db = this.getReadableDatabase();
-
+		
+		Layout layout = new Layout();
 		// 2. build query
+		try{
 		Cursor cursor = db.query(TABLE_LAYOUT, // a. table
 				COLUMNS, // b. column names
 				FIELD_ID + "=?", // c. selections
@@ -84,22 +92,23 @@ public class DBHelper extends SQLiteOpenHelper {
 				null, // f. having
 				null, // g. order by
 				null); // h. limit
-
 		// 3. if we got results get the first one
 		if (cursor != null)
 			cursor.moveToFirst();
-
 		// 4. build book object
-		Layout layout = new Layout();
 		layout.setId(cursor.getString(0));
 		layout.setTitle(cursor.getString(1));
 		layout.setDesc(cursor.getString(2));
 		layout.setMapURL(cursor.getString(3));
-
 		// 5. return book
+		}catch (CursorIndexOutOfBoundsException e){
+			Toast.makeText(context, "ID: ["+id + "] isn't exist.", Toast.LENGTH_LONG).show();
+		}
 		return layout;
+
+
 	}// end of getLayout
-	
+
 	/*
 	 * return List<Layout>
 	 */
@@ -134,8 +143,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void deleteLayoutRow(Layout layout) {
 		// 1. get reference to writable DB
 		SQLiteDatabase db = this.getWritableDatabase();
-
-		// 2. delete
 		db.delete(TABLE_LAYOUT, FIELD_ID + " = ?",
 				new String[] { String.valueOf(layout.getId()) });
 

@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -94,7 +95,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		progressDialog = new ProgressDialog(this);
 
 		setLeftDrawer();
-
+		
+		
 	}// end of onCreate
 
 	/**
@@ -277,7 +279,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	 * 接收databases的mapTitle來改變地圖的layoutType
 	 */
 	private void setMapLayoutType(GoogleMap gMap, String mapLayoutType) {
-		DBHelper dbHelper = new DBHelper(MainActivity.this);
 		if (mapLayoutType.equals("GoogleMap NONE")) {
 			gMap.setMapType(MAP_TYPE_NONE);
 		} else if (mapLayoutType.equals("GoogleMap NORMAL")) {

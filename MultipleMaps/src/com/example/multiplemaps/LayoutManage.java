@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.StaticLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,26 +54,33 @@ public class LayoutManage extends Activity {
 		listDesc = new ArrayList<String>();
 		listURL = new ArrayList<String>();
 		layouts = new ArrayList<Layout>();
-
+		
+		ds = new DefaultSettings(LayoutManage.this);
+		
 		setLayoutList();
 		// 下拉前的呈現方式
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_dropdown_item, listTitle);
 
-		// 下拉後的呈現方式
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spUMap.setAdapter(adapter);
-		spLMap.setAdapter(adapter);
-
-		SpinnerSelected(spUMap, tvUMap, true);
-		SpinnerSelected(spLMap, tvLMap, false);
-		ds = new DefaultSettings(LayoutManage.this);
+		setSpinner();
 
 	}// end of onCreate
 
-	private void SpinnerSelected(Spinner sp, TextView tv, boolean upOrNot) {
+	private void setSpinner() {
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_dropdown_item, listTitle);
+		// 下拉後的呈現方式
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spUMap.setAdapter(adapter);
+		//設定預設的選擇項目
+		spUMap.setSelection(ds.getUpperSpinnerPosition());
+		spLMap.setAdapter(adapter);
+		spLMap.setSelection(ds.getLowerSpinnerPosition());
+		spinnerSelected(spUMap, tvUMap, true);
+		spinnerSelected(spLMap, tvLMap, false);
+	}
+
+	private void spinnerSelected(Spinner sp, TextView tv, boolean upOrNot) {
 		final TextView tv1 = tv;
-		final boolean upOrNot1 = upOrNot;
+		final boolean upOrNot1 = upOrNot; //true = upper, false = lower;
 		sp.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
@@ -80,17 +88,18 @@ public class LayoutManage extends Activity {
 				tv1.setText(listDesc.get(position));
 				if (upOrNot1) {
 					ds.setUpperMapLayout(listTitle.get(position));
+					ds.setUpperSpinnerPosition(position);
 				}
 				if (!upOrNot1) {
 					ds.setLowerMapLayout(listTitle.get(position));
+					ds.setLowerSpinnerPosition(position);
 				}
 			}
-
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
-	}
+	}// end of spinnerSelected
 
 	private void setLayoutList() {
 		dbHelper = new DBHelper(LayoutManage.this);

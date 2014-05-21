@@ -31,11 +31,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	final static String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_LAYOUT;
 
 	final static String GOOGLE_MAP = "INSERT INTO " + TABLE_LAYOUT
-			+ " Values ('1','GoogleMap NONE', 'NONE', '1'),"
-			+ "('2','GoogleMap NORMAL', 'NORMAL', '2'),"
-			+ "('3','GoogleMap HYBRID', 'HYBRID', '3'),"
-			+ "('4','GoogleMap SATELLITE', 'SATELLITE', '4'), "
-			+ "('5','GoogleMap TERRAIN', 'TERRAIN', '5');";
+			+ " Values ('1','GoogleMap NONE', 'NONE', 'GoogleMap NONE'),"
+			+ "('2','GoogleMap NORMAL', 'NORMAL', 'GoogleMap NORMAL'),"
+			+ "('3','GoogleMap HYBRID', 'HYBRID', 'GoogleMap HYBRID'),"
+			+ "('4','GoogleMap SATELLITE', 'SATELLITE', 'GoogleMap SATELLITE'), "
+			+ "('5','GoogleMap TERRAIN', 'TERRAIN', 'GoogleMap TERRAIN');";
 
 	private Context context;
 
@@ -44,12 +44,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	public DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DB_VERSION);
 		this.context = context;
-		Log.d("mdb", "DBHepler onCreate");
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// 只有當getRead/Writable...時才會做onCreate
+		Log.d("mdb", "DBHepler onCreate");
 		db.execSQL(INIT_TABLE);
 		db.execSQL(GOOGLE_MAP);
 	}

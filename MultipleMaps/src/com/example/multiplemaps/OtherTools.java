@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import android.os.Environment;
+import android.util.Log;
 
 public class OtherTools {
 	private static final String DATABASE_NAME = "MultiMaps.db";
@@ -26,6 +27,10 @@ public class OtherTools {
 		// new File的兩個params組合起來就是路徑
 		File currentDB = new File(data, currentDBPath);
 		File backupDB = new File(sd, backupDBPath);
+		if (backupDB.exists()) {
+			backupDB.delete();
+			Log.d("mdb", "delete file");
+		}
 		try {
 			// file channel 要跟fileinput/outputStream做組合使用
 			source = new FileInputStream(currentDB).getChannel();
@@ -34,6 +39,7 @@ public class OtherTools {
 			destination.transferFrom(source, 0, source.size());
 			source.close();
 			destination.close();
+			Log.d("mdb", "file exported");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

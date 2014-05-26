@@ -1,6 +1,5 @@
 package com.example.multiplemaps;
 
-import android.R.integer;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -14,9 +13,7 @@ public class DefaultSettings {
 	private static final String LOWER_MAP_LAYOUT = "Lower Map Layout";
 	private static final String UPPER_MAP_SPINNER_POSITION = "Upper Spinner Position";
 	private static final String LOWER_MAP_SPINNER_POSITION = "Lower Spinner Position";
-	private static final int U_MAP = 1; // single map: upperMap
-	private static final int L_Map = 2;// single map: lowerMap
-	private static final int TWO_Map = 3;// show two map
+	private static final int TWO_Map = 3;// up 1, low 2, two 3
 	private SharedPreferences sharedSettings; // 各種UI設定存檔
 	private SharedPreferences.Editor defaultSettings;// 各種UI設定存檔
 

@@ -14,6 +14,7 @@ public class OtherTools {
 	public static void copyDBtoSDcard() {
 		// 輸出位置，預設位置為 /mnt/sdcard
 		File sd = Environment.getExternalStorageDirectory();
+		
 		// 取得系統的資料擺放目錄，預設位置為 /data
 		File data = Environment.getDataDirectory();
 		FileChannel source = null;

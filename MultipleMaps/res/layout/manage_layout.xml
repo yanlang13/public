@@ -74,8 +74,8 @@
             android:id="@+id/tv_manage_descLower"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
             android:layout_marginBottom="10dp"
+            android:layout_marginLeft="30dp"
             android:layout_marginRight="10dp"
             android:text="TextView"
             android:textColor="@color/Black"
@@ -98,5 +98,13 @@
         android:onClick="exportDatabase"
         android:text="Export DB"
         android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_manage_GeoJSON"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GeoJSON"
+        android:scrollbars = "vertical"
+        android:textSize="14sp" />
 
 </LinearLayout>

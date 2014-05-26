@@ -233,36 +233,37 @@ containing a value of this type.
         public static final int ic_plusone_tall_off_client=0x7f020021;
     }
     public static final class id {
-        public static final int action_display_mode=0x7f050018;
-        public static final int action_search=0x7f050017;
-        public static final int action_settings=0x7f050019;
-        public static final int all_actions=0x7f050016;
-        public static final int all_displays=0x7f05001a;
+        public static final int action_display_mode=0x7f050019;
+        public static final int action_search=0x7f050018;
+        public static final int action_settings=0x7f05001a;
+        public static final int all_actions=0x7f050017;
+        public static final int all_displays=0x7f05001b;
         public static final int bt_export_database=0x7f05000d;
         public static final int bt_manage_addMap=0x7f05000c;
-        public static final int drawer_layout=0x7f050011;
-        public static final int et_search_address_input=0x7f050010;
+        public static final int drawer_layout=0x7f050012;
+        public static final int et_search_address_input=0x7f050011;
         public static final int hybrid=0x7f050004;
-        public static final int left_drawer=0x7f050013;
+        public static final int left_drawer=0x7f050014;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
         public static final int satellite=0x7f050002;
-        public static final int show_two_maps=0x7f05001d;
-        public static final int single_OneMap=0x7f050012;
-        public static final int single_lowerMap=0x7f05001c;
-        public static final int single_upperMap=0x7f05001b;
+        public static final int show_two_maps=0x7f05001e;
+        public static final int single_OneMap=0x7f050013;
+        public static final int single_lowerMap=0x7f05001d;
+        public static final int single_upperMap=0x7f05001c;
         public static final int sp_manage_lowerMap=0x7f05000a;
         public static final int sp_manage_upperMap=0x7f050007;
-        public static final int tableRow2=0x7f05000e;
+        public static final int tableRow2=0x7f05000f;
         public static final int terrain=0x7f050003;
         public static final int tv_drawer_drawerTitle=0x7f050005;
+        public static final int tv_manage_GeoJSON=0x7f05000e;
         public static final int tv_manage_descLower=0x7f05000b;
         public static final int tv_manage_descUpper=0x7f050008;
         public static final int tv_manage_lowerMap=0x7f050009;
         public static final int tv_manage_upperMap=0x7f050006;
-        public static final int tv_search_goto=0x7f05000f;
-        public static final int two_lowerMap=0x7f050015;
-        public static final int two_upperMap=0x7f050014;
+        public static final int tv_search_goto=0x7f050010;
+        public static final int two_lowerMap=0x7f050016;
+        public static final int two_upperMap=0x7f050015;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;

@@ -52,6 +52,9 @@ public class LayoutManage extends Activity {
 		tvLMap = (TextView) findViewById(R.id.tv_manage_descLower);
 		tvKML = (TextView) findViewById(R.id.tv_manage_GeoJSON);
 
+		// textview scrolling, 搭配.xml的 android:scrollbars = "vertical"
+		tvKML.setMovementMethod(new ScrollingMovementMethod());
+
 		listId = new ArrayList<String>();
 		listTitle = new ArrayList<String>();
 		listDesc = new ArrayList<String>();
@@ -61,18 +64,16 @@ public class LayoutManage extends Activity {
 		ds = new DefaultSettings(LayoutManage.this);
 
 		setLayoutList();
+		
 		// 下拉前的呈現方式
-
 		setSpinner();
-		Log.d("mdb", "ready fro getKML");
+		
 		// getKML();
-		testKML();
-		// textview scrolling, 搭配.xml的 android:scrollbars = "vertical"
-		tvKML.setMovementMethod(new ScrollingMovementMethod());
+		parseKML();
 
 	}// end of onCreate
-
-	private void testKML() {
+	
+	private void parseKML() {
 		int PRETTY_PRINT_INDENT_FACTOR = 4;
 		try {
 			File sd = Environment.getExternalStorageDirectory();
@@ -88,7 +89,7 @@ public class LayoutManage extends Activity {
 				sb.append(line.trim());
 			}
 			br.close();
-			
+
 			// github下載的JSONObject
 			JSONObject xmlJSONObj = XML.toJSONObject(sb.toString());
 			String jsonPrettyPrintString = xmlJSONObj
@@ -96,8 +97,11 @@ public class LayoutManage extends Activity {
 			tvKML.setText(jsonPrettyPrintString);
 			bw.write(jsonPrettyPrintString);
 			bw.close();
-			
-			
+
+			JSONObject placeMark = xmlJSONObj.getJSONObject("kml")
+					.getJSONObject("Document").getJSONObject("Placemark");
+			// 取得kml中所需的資料
+
 		} catch (IOException e) {
 			Log.d("mdb", e.toString());
 		} catch (JSONException e) {

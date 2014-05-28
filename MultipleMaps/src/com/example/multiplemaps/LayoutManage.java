@@ -64,15 +64,16 @@ public class LayoutManage extends Activity {
 		ds = new DefaultSettings(LayoutManage.this);
 
 		setLayoutList();
-		
+
 		// 下拉前的呈現方式
-		setSpinner();
-		
+		setSpinnerInfo();
+
 		// getKML();
 		parseKML();
 
 	}// end of onCreate
-	
+
+	// ============================================================ onCreating
 	private void parseKML() {
 		int PRETTY_PRINT_INDENT_FACTOR = 4;
 		try {
@@ -109,7 +110,7 @@ public class LayoutManage extends Activity {
 		}
 	}
 
-	private void setSpinner() {
+	private void setSpinnerInfo() {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_dropdown_item, listTitle);
 		// 下拉後的呈現方式
@@ -125,7 +126,8 @@ public class LayoutManage extends Activity {
 
 	private void spinnerSelected(Spinner sp, TextView tv, boolean upOrNot) {
 		final TextView tv1 = tv;
-		final boolean upOrNot1 = upOrNot; // true = upper, false = lower;
+		//  upOrNot1: true = upper, false = lower;
+		final boolean upOrNot1 = upOrNot; 
 		sp.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
@@ -163,6 +165,9 @@ public class LayoutManage extends Activity {
 		OtherTools.copyDBtoSDcard();
 	}// end of exportDatabase
 
+	// ============================================================ onCreated
+
+	// ============================================================ Menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main_null, menu);
@@ -184,4 +189,6 @@ public class LayoutManage extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
+
+	// ============================================================ MenuED
 }

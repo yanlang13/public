@@ -14,6 +14,7 @@ import com.google.android.gms.internal.bw;
 import android.app.Activity;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.NavUtils;
@@ -31,10 +32,8 @@ import android.widget.TextView;
 public class LayoutManage extends Activity {
 	private Spinner spUMap, spLMap;
 	private TextView tvUMap, tvLMap, tvKML;
-	private ArrayList<String> listId;
-	private ArrayList<String> listTitle;
-	private ArrayList<String> listDesc;
-	private ArrayList<String> listURL;
+	private ArrayList<String> listId, listTitle, listDesc, listInputType,
+			listSource;
 	private List<Layout> layouts;
 	private DBHelper dbHelper;
 	private DefaultSettings ds;
@@ -58,7 +57,8 @@ public class LayoutManage extends Activity {
 		listId = new ArrayList<String>();
 		listTitle = new ArrayList<String>();
 		listDesc = new ArrayList<String>();
-		listURL = new ArrayList<String>();
+		listInputType = new ArrayList<String>();
+		listSource = new ArrayList<String>();
 		layouts = new ArrayList<Layout>();
 
 		ds = new DefaultSettings(LayoutManage.this);
@@ -126,8 +126,8 @@ public class LayoutManage extends Activity {
 
 	private void spinnerSelected(Spinner sp, TextView tv, boolean upOrNot) {
 		final TextView tv1 = tv;
-		//  upOrNot1: true = upper, false = lower;
-		final boolean upOrNot1 = upOrNot; 
+		// upOrNot1: true = upper, false = lower;
+		final boolean upOrNot1 = upOrNot;
 		sp.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
@@ -156,7 +156,8 @@ public class LayoutManage extends Activity {
 			listId.add(l.getId());
 			listTitle.add(l.getTitle());
 			listDesc.add(l.getDesc());
-			listURL.add(l.getMapURL());
+			listInputType.add(l.getInputType());
+			listSource.add(l.getSource());
 		}
 		dbHelper.close();
 	}// end of setLayoutList

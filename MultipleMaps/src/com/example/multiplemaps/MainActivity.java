@@ -393,7 +393,33 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				}
 			});
 
-		}// end of if id ==
+		}else if(id == R.id.action_new_input){
+			AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
+					MainActivity.this);
+			LayoutInflater inflater = this.getLayoutInflater();
+			View dialogView = inflater.inflate(R.layout.new_action, null);
+			// 取得輸入的地址
+			etSearch = (EditText) dialogView
+					.findViewById(R.id.et_search_address_input);
+			alertBuilder.setView(dialogView);
+			alertBuilder.setPositiveButton("Show Layer",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+						}
+					});
+
+			alertBuilder.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+						}
+					});
+			AlertDialog alertDialog = alertBuilder.create();
+			alertDialog.setCanceledOnTouchOutside(false);
+			alertDialog.show();
+			return true;
+		}// end of if id == ?
 		return super.onOptionsItemSelected(item);
 	}// end of onOptionsItemSelected
 

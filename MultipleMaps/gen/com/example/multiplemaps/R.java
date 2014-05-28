@@ -224,46 +224,49 @@ containing a value of this type.
         public static final int common_signin_btn_text_pressed_light=0x7f020018;
         public static final int drawer_layout_setting=0x7f020019;
         public static final int drawer_shadow=0x7f02001a;
-        public static final int ic_drawer=0x7f02001b;
-        public static final int ic_launcher=0x7f02001c;
-        public static final int ic_maps=0x7f02001d;
-        public static final int ic_plusone_medium_off_client=0x7f02001e;
-        public static final int ic_plusone_small_off_client=0x7f02001f;
-        public static final int ic_plusone_standard_off_client=0x7f020020;
-        public static final int ic_plusone_tall_off_client=0x7f020021;
+        public static final int ic_action_new=0x7f02001b;
+        public static final int ic_drawer=0x7f02001c;
+        public static final int ic_launcher=0x7f02001d;
+        public static final int ic_maps=0x7f02001e;
+        public static final int ic_plusone_medium_off_client=0x7f02001f;
+        public static final int ic_plusone_small_off_client=0x7f020020;
+        public static final int ic_plusone_standard_off_client=0x7f020021;
+        public static final int ic_plusone_tall_off_client=0x7f020022;
     }
     public static final class id {
-        public static final int action_display_mode=0x7f050019;
-        public static final int action_search=0x7f050018;
-        public static final int action_settings=0x7f05001a;
-        public static final int all_actions=0x7f050017;
-        public static final int all_displays=0x7f05001b;
+        public static final int action_display_mode=0x7f05001a;
+        public static final int action_new_input=0x7f05001b;
+        public static final int action_search=0x7f050019;
+        public static final int action_settings=0x7f05001c;
+        public static final int all_actions=0x7f050018;
+        public static final int all_displays=0x7f05001d;
         public static final int bt_export_database=0x7f05000d;
         public static final int bt_manage_addMap=0x7f05000c;
-        public static final int drawer_layout=0x7f050012;
-        public static final int et_search_address_input=0x7f050011;
+        public static final int drawer_layout=0x7f050013;
+        public static final int et_search_address_input=0x7f050012;
         public static final int hybrid=0x7f050004;
-        public static final int left_drawer=0x7f050014;
+        public static final int left_drawer=0x7f050015;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
         public static final int satellite=0x7f050002;
-        public static final int show_two_maps=0x7f05001e;
-        public static final int single_OneMap=0x7f050013;
-        public static final int single_lowerMap=0x7f05001d;
-        public static final int single_upperMap=0x7f05001c;
+        public static final int show_two_maps=0x7f050020;
+        public static final int single_OneMap=0x7f050014;
+        public static final int single_lowerMap=0x7f05001f;
+        public static final int single_upperMap=0x7f05001e;
         public static final int sp_manage_lowerMap=0x7f05000a;
         public static final int sp_manage_upperMap=0x7f050007;
-        public static final int tableRow2=0x7f05000f;
+        public static final int tableRow2=0x7f050010;
         public static final int terrain=0x7f050003;
+        public static final int textView1=0x7f05000f;
         public static final int tv_drawer_drawerTitle=0x7f050005;
         public static final int tv_manage_GeoJSON=0x7f05000e;
         public static final int tv_manage_descLower=0x7f05000b;
         public static final int tv_manage_descUpper=0x7f050008;
         public static final int tv_manage_lowerMap=0x7f050009;
         public static final int tv_manage_upperMap=0x7f050006;
-        public static final int tv_search_goto=0x7f050010;
-        public static final int two_lowerMap=0x7f050016;
-        public static final int two_upperMap=0x7f050015;
+        public static final int tv_search_goto=0x7f050011;
+        public static final int two_lowerMap=0x7f050017;
+        public static final int two_upperMap=0x7f050016;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f070000;
@@ -272,9 +275,10 @@ containing a value of this type.
         public static final int drawer_list_item=0x7f030000;
         public static final int manage_layout=0x7f030001;
         public static final int manage_spinner_list=0x7f030002;
-        public static final int search_action=0x7f030003;
-        public static final int single_maps=0x7f030004;
-        public static final int two_maps=0x7f030005;
+        public static final int new_action=0x7f030003;
+        public static final int search_action=0x7f030004;
+        public static final int single_maps=0x7f030005;
+        public static final int two_maps=0x7f030006;
     }
     public static final class menu {
         public static final int main=0x7f0a0000;
@@ -282,7 +286,8 @@ containing a value of this type.
         public static final int popup_display_mode=0x7f0a0002;
     }
     public static final class string {
-        public static final int action_display_mode=0x7f06001d;
+        public static final int action_display_mode=0x7f06001e;
+        public static final int action_new=0x7f06001d;
         public static final int action_search=0x7f06001c;
         public static final int action_settings=0x7f06001b;
         public static final int app_name=0x7f06001a;
@@ -380,12 +385,12 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f060013;
-        public static final int drawer_close=0x7f06001f;
-        public static final int drawer_open=0x7f06001e;
-        public static final int layout_manage=0x7f060023;
-        public static final int show_two_maps=0x7f060022;
-        public static final int single_lowerMap=0x7f060021;
-        public static final int single_upperMap=0x7f060020;
+        public static final int drawer_close=0x7f060020;
+        public static final int drawer_open=0x7f06001f;
+        public static final int layout_manage=0x7f060024;
+        public static final int show_two_maps=0x7f060023;
+        public static final int single_lowerMap=0x7f060022;
+        public static final int single_upperMap=0x7f060021;
     }
     public static final class style {
         /** 

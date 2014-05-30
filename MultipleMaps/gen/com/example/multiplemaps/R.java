@@ -241,7 +241,7 @@ containing a value of this type.
         public static final int all_actions=0x7f050018;
         public static final int all_displays=0x7f05001d;
         public static final int bt_export_database=0x7f05000d;
-        public static final int bt_manage_addMap=0x7f05000c;
+        public static final int bt_manage_kmltotxt=0x7f05000c;
         public static final int drawer_layout=0x7f050013;
         public static final int et_search_address_input=0x7f050012;
         public static final int hybrid=0x7f050004;

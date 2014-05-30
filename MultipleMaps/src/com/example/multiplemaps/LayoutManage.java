@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -50,7 +51,6 @@ public class LayoutManage extends Activity {
 		tvUMap = (TextView) findViewById(R.id.tv_manage_descUpper);
 		tvLMap = (TextView) findViewById(R.id.tv_manage_descLower);
 		tvKML = (TextView) findViewById(R.id.tv_manage_GeoJSON);
-
 		// textview scrolling, 搭配.xml的 android:scrollbars = "vertical"
 		tvKML.setMovementMethod(new ScrollingMovementMethod());
 
@@ -69,47 +69,10 @@ public class LayoutManage extends Activity {
 		setSpinnerInfo();
 
 		// getKML();
-		parseKML();
 
 	}// end of onCreate
 
 	// ============================================================ onCreating
-	private void parseKML() {
-		int PRETTY_PRINT_INDENT_FACTOR = 4;
-		try {
-			File sd = Environment.getExternalStorageDirectory();
-			File kmlFrom = new File(sd, "polygonC.kml");
-			File text = new File(sd, "xmlParsed.txt");
-			BufferedReader br = new BufferedReader(new FileReader(kmlFrom));
-			String line;
-			StringBuilder sb = new StringBuilder();
-
-			BufferedWriter bw = new BufferedWriter(new FileWriter(text));
-
-			while ((line = br.readLine()) != null) {
-				sb.append(line.trim());
-			}
-			br.close();
-
-			// github下載的JSONObject
-			JSONObject xmlJSONObj = XML.toJSONObject(sb.toString());
-			String jsonPrettyPrintString = xmlJSONObj
-					.toString(PRETTY_PRINT_INDENT_FACTOR);
-			tvKML.setText(jsonPrettyPrintString);
-			bw.write(jsonPrettyPrintString);
-			bw.close();
-
-			JSONObject placeMark = xmlJSONObj.getJSONObject("kml")
-					.getJSONObject("Document").getJSONObject("Placemark");
-			// 取得kml中所需的資料
-
-		} catch (IOException e) {
-			Log.d("mdb", e.toString());
-		} catch (JSONException e) {
-			Log.d("mdb", e.toString());
-		}
-	}
-
 	private void setSpinnerInfo() {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_dropdown_item, listTitle);
@@ -161,7 +124,41 @@ public class LayoutManage extends Activity {
 		}
 		dbHelper.close();
 	}// end of setLayoutList
+	
+	public void parseKMLtoText(View view){ //onClick
+		int PRETTY_PRINT_INDENT_FACTOR = 4;
+		try {
+			File sd = Environment.getExternalStorageDirectory();
+			File kmlFrom = new File(sd, "polygonC.kml");
+			File txt = new File(sd, "xmlParsed.txt");
+			
+			BufferedReader br = new BufferedReader(new FileReader(kmlFrom));
+			String line;
+			StringBuilder sb = new StringBuilder();
 
+			BufferedWriter bw = new BufferedWriter(new FileWriter(txt));
+
+			while ((line = br.readLine()) != null) {
+				sb.append(line.trim());
+			}
+			br.close();
+
+			// github下載的JSONObject
+			JSONObject xmlJSONObj = XML.toJSONObject(sb.toString());
+			String jsonPrettyPrintString = xmlJSONObj
+					.toString(PRETTY_PRINT_INDENT_FACTOR);
+			tvKML.setText(jsonPrettyPrintString);
+			bw.write(jsonPrettyPrintString);
+			bw.close();
+			
+		} catch (IOException e) {
+			Log.d("mdb", "LayoutManage, " + e.toString());
+		} catch (JSONException e) {
+			Log.d("mdb", e.toString());
+		}
+	}
+	
+	
 	public void exportDatabase(View view) {
 		OtherTools.copyDBtoSDcard();
 	}// end of exportDatabase

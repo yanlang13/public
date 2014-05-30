@@ -83,11 +83,12 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/bt_manage_addMap"
+        android:id="@+id/bt_manage_kmltotxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:text="Add Map"
+        android:onClick="parseKMLtoText"
+        android:text="KML to Txt"
         android:textSize="20sp" />
 
     <Button

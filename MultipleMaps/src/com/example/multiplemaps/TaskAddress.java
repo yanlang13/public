@@ -17,7 +17,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 /**
  * 輸入地址回傳CamerPosition，四個參數分別為context, maxZoomLevel, minZoomLevel, addressInput
  */
-public class AddressTask extends AsyncTask<Object, Void, LatLngBounds> {
+public class TaskAddress extends AsyncTask<Object, Void, LatLngBounds> {
 	@Override
 	protected LatLngBounds doInBackground(Object... params) {
 		// 需要return null or CameraPosition
@@ -76,7 +76,6 @@ public class AddressTask extends AsyncTask<Object, Void, LatLngBounds> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return null;
 	}// end of doInBackground
 }// end of GetAdressTask

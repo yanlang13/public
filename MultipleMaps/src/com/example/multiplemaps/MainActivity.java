@@ -6,6 +6,8 @@ import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE;
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_TERRAIN;
 
+import java.io.File;
+
 import com.example.multiplemaps.MapTools;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
@@ -19,6 +21,8 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PolygonOptions;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -32,6 +36,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -79,12 +84,16 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final int TWO_MAP = 3;// show two map
 	private int disMode; // 用以確認現在地圖顯示模式
 
+	// 新增kml
+	private DBHelper dbHelper;
+	private SQLiteDatabase db;
+
 	// ====================================================================Declared
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		ds = new DefaultSettings(MainActivity.this);
 		disMode = ds.getDisMode();
 
@@ -96,8 +105,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		progressDialog = new ProgressDialog(this);
 
 		setLeftDrawer();
-		
-		
+
 	}// end of onCreate
 
 	/**
@@ -238,7 +246,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	/*
 	 * SetTwoMap，兩個參數分別是地圖類型
 	 */
-	private void setUpTwoMapIfNeeded(String upperMapLayout, String lowerMapLayout) { // call from onResume()
+	private void setUpTwoMapIfNeeded(String upperMapLayout,
+			String lowerMapLayout) { // call from onResume()
 		if (upperMap == null || lowerMap == null) {
 			upperMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.two_upperMap)).getMap();
@@ -263,7 +272,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				upperMap.setOnMyLocationButtonClickListener(this);
 				setMapLayoutType(upperMap, upperMapLayout);
 				setMapLayoutType(lowerMap, lowerMapLayout);
-				
+
 			}// end of if
 		}// end of setUpMapIfNeeded()
 	}
@@ -393,7 +402,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				}
 			});
 
-		}else if(id == R.id.action_new_input){
+		} else if (id == R.id.action_new_input) {
 			AlertDialog.Builder alertBuilder = new AlertDialog.Builder(
 					MainActivity.this);
 			LayoutInflater inflater = this.getLayoutInflater();
@@ -406,6 +415,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
+							File sd = Environment.getExternalStorageDirectory();
+							String inputData = "polygonC.kml";
+							File kml = new File(sd, inputData);
+							new AddInputTask().execute(MainActivity.this, kml);
 						}
 					});
 
@@ -426,7 +439,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	// ====================================================================MenuED
 
 	// ====================================================================Classing
-	private class GetAddressTask extends AddressTask {
+	private class GetAddressTask extends TaskAddress {
 		@Override
 		protected void onPreExecute() {
 			progressDialog.show();
@@ -457,7 +470,22 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		}// end of onPostExecute
 	}// end of GetAddressTask
 
-	// ====================================================================Classed
+	private class AddInputTask extends TaskAddInput {
+		@Override
+		protected void onPreExecute() {
+			progressDialog.show();
+		}
+
+		@Override
+		protected void onPostExecute(PolygonOptions po) {
+			if (po == null) {
+				Toast.makeText(MainActivity.this, "check your kml file type again",
+						Toast.LENGTH_LONG).show();
+			}
+			progressDialog.dismiss();
+		}
+	}// end of AddInputTask
+		// ====================================================================Classed
 
 	// ====================================================================MethodING
 

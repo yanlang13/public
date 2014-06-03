@@ -195,6 +195,9 @@ containing a value of this type.
          */
         public static final int activity_horizontal_margin=0x7f080000;
         public static final int activity_vertical_margin=0x7f080001;
+        public static final int text_size_large=0x7f080002;
+        public static final int text_size_medium=0x7f080003;
+        public static final int text_size_small=0x7f080004;
     }
     public static final class drawable {
         public static final int action_search=0x7f020000;

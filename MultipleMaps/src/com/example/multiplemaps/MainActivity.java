@@ -264,6 +264,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				SyncTools syncTools = new SyncTools(MainActivity.this,
 						upperMap, lowerMap);
 				syncTools.syncTwoMapCameraPosition();
+				
+				//TODO 讓createCirlce受到控制，需要思考整個的邏輯，原先的寫法不足以滿足
 				syncTools.syncDisplayUserClicked();
 
 				// userUiSetting

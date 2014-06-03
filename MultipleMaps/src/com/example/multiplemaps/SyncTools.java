@@ -70,7 +70,7 @@ public class SyncTools {
 		upperMap.setOnMapClickListener(new OnMapClickListener() {
 			@Override
 			public void onMapClick(LatLng geoPoint) {
-				// 1.顯示點擊位置
+				// 1.顯示點擊位置，geoPoint為點擊位置
 				createCircle(upperMap, geoPoint);
 				createCircle(lowerMap, geoPoint);
 			}
@@ -85,7 +85,11 @@ public class SyncTools {
 		});
 	}// end of displayUserClicked()
 
-	// 在user點擊位置，顯示圓圈。透過location class讓這個circle不至於失控。
+	/** 
+	 * 在user點擊位置，顯示圓圈。透過location class讓這個circle不至於失控。
+	 * @param map
+	 * @param geoPoint
+	 */
 	private void createCircle(GoogleMap map, LatLng geoPoint) {
 
 		float viewDistance = mapTools.getViewRegionHorizontalDistance(map);

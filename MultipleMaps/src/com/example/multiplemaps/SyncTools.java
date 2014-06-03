@@ -85,8 +85,9 @@ public class SyncTools {
 		});
 	}// end of displayUserClicked()
 
-	/** 
+	/**
 	 * 在user點擊位置，顯示圓圈。透過location class讓這個circle不至於失控。
+	 * 
 	 * @param map
 	 * @param geoPoint
 	 */

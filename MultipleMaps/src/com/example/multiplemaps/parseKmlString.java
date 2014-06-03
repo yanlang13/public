@@ -1,6 +1,9 @@
 package com.example.multiplemaps;
 
-
+/**
+ * 處理kmlString
+ *
+ */
 public class parseKmlString {
 	private String kmlString; //constructor
 	private JSONObject jsonKML; 
@@ -12,7 +15,10 @@ public class parseKmlString {
 		jsonKML = XML.toJSONObject(kmlString);
 		// 取得kml中所需的資料
 	}
-
+	
+	/**
+	 * @return true = kml ; false = not;
+	 */
 	public Boolean isKML() {
 		if(jsonKML.has("kml")){
 			kml = jsonKML.getJSONObject("kml");

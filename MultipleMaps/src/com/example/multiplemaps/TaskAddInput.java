@@ -49,6 +49,8 @@ public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 				//
 				Layout l = dbHelper.getLayout("PolygonC");
 				Log.d("mdb", l.getSource());
+				
+				//TODO 應該是return object，然後視情況轉mark or polygon or overlay to display
 				po = new PolygonOptions();
 				return po;
 			} else {
@@ -64,4 +66,4 @@ public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 		}
 		return null;
 	}
-}
+}// end of TaskAddInput

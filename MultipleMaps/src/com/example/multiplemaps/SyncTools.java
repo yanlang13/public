@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
-/*
+/**
  * context:作用中的activity，兩個goglemap
  */
 public class SyncTools {
@@ -32,7 +32,7 @@ public class SyncTools {
 		this.lowerMap = lowerMap;
 	}// end of SyncTools
 
-	/*
+	/**
 	 * 同步移動cameraPosition
 	 */
 	public void syncTwoMapCameraPosition() { // call from setUpMapIfNeeded()

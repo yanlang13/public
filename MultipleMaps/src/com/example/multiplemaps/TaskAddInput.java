@@ -1,20 +1,15 @@
 package com.example.multiplemaps;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-
 import com.google.android.gms.maps.model.PolygonOptions;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 	private DBHelper dbHelper; // 寫kmlStringToDataBase
@@ -30,6 +25,7 @@ public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 			br = new BufferedReader(new FileReader(kml));
 			String line;
 			StringBuilder sb = new StringBuilder();
+			
 
 			while ((line = br.readLine()) != null) {
 				sb.append(line.trim());
@@ -38,11 +34,21 @@ public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 
 			// 將kml存入db，並轉為polygon
 			kmlString = new parseKmlString(sb.toString());
-			
+
 			if (kmlString.isKML()) {
 				Log.d("mdb", "Input is a KML file.");
-				Log.d("mdb", "kml type: " + kmlString.getKmlType());
 				
+				//寫到database
+				dbHelper = new DBHelper(context);
+				Layout layout = new Layout();
+				layout.setTitle("PolygonC");
+				layout.setDesc("test kml");
+				layout.setInputType("Kml");
+				layout.setSource(sb.toString());
+				dbHelper.addLayout(layout);
+				//
+				Layout l = dbHelper.getLayout("PolygonC");
+				Log.d("mdb", l.getSource());
 				po = new PolygonOptions();
 				return po;
 			} else {
@@ -53,11 +59,9 @@ public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 			Log.d("mdb", "TaskAddInput, " + e.toString());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			Log.d("mdb", "TaskAddInput, " + e.toString());
 			e.printStackTrace();
 		}
 		return null;
 	}
-
 }

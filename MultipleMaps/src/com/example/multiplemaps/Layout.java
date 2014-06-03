@@ -1,5 +1,6 @@
 package com.example.multiplemaps;
 
+
 public class Layout {
 	private String id;
 	private String title;
@@ -10,7 +11,7 @@ public class Layout {
 	public Layout() {
 	}
 
-	public Layout(String title, String desc, String inputType,String source) {
+	public Layout(String title, String desc, String inputType, String source) {
 		super();
 		this.title = title;
 		this.desc = desc;
@@ -20,31 +21,34 @@ public class Layout {
 
 	@Override
 	public String toString() {
-		return String.format("[Id: %s,Title: %s, Description: %s, InputType: %s, Source: %s]",
-				id, title, desc, inputType, source);
+		return String
+				.format("[Id: %s,Title: %s, Description: %s, InputType: %s, Source: %s]",
+						id, title, desc, inputType, source);
 	}
 
 	public String getId() {
-		return id;
+			return id;
 	}
 
 	public String getTitle() {
-		return title;
+			return title;
 	}
 
 	public String getDesc() {
-		return desc;
+			return desc;
 	}
 
 	public String getInputType() {
-		return inputType;
+			return inputType;
 	}
-	
-	public String getSource() {
-		return source;
-	}
-	
 
+	public String getSource() {
+			return source;
+	}
+
+	/*
+	 * 不要自己設id，dbHepler會幫忙自動設定
+	 */
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -60,8 +64,8 @@ public class Layout {
 	public void setInputType(String inputType) {
 		this.inputType = inputType;
 	}
-	
-	public void setSource(String source){
+
+	public void setSource(String source) {
 		this.source = source;
 	}
 }

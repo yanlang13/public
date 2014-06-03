@@ -93,7 +93,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		ds = new DefaultSettings(MainActivity.this);
 		disMode = ds.getDisMode();
 

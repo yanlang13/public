@@ -1,10 +1,11 @@
 package com.example.multiplemaps;
 
 import java.util.ArrayList;
+import java.util.DuplicateFormatFlagsException;
 import java.util.List;
 
-import com.google.android.gms.maps.model.LatLng;
-
+import android.R.integer;
+import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -75,19 +76,56 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void addLayout(Layout layout) {
 		// 1. get reference to writable DB
 		SQLiteDatabase db = this.getWritableDatabase();
-		// 2. create ContentValues to add key "column"/value
-		ContentValues values = new ContentValues();
-		values.put(FIELD_TITLE, layout.getTitle());
-		values.put(FIELD_DESC, layout.getDesc());
-		values.put(FIELD_INPUT_TYPE, layout.getInputType());
-		values.put(FIELD_SOURCE, layout.getSource());
-
-		// 3. insert
-		db.insert(TABLE_LAYOUT, null, values);
+		if (!duplicateCheck(layout.getTitle())) {
+			// 2. create ContentValues to add key "column"/value
+			ContentValues values = new ContentValues();
+			values.put(FIELD_TITLE, layout.getTitle());
+			values.put(FIELD_DESC, layout.getDesc());
+			values.put(FIELD_INPUT_TYPE, layout.getInputType());
+			values.put(FIELD_SOURCE, layout.getSource());
+			// 3. insert
+			db.insert(TABLE_LAYOUT, null, values);
+		}
 
 		// 4. close
 		db.close();
 	}// end of addLayout
+	
+	/**
+	 * @param title
+	 * @return layout
+	 */
+	public Layout getLayout(String title) {
+		// 1. get reference to readable DB
+		SQLiteDatabase db = this.getReadableDatabase();
+		Layout layout = new Layout();
+		// 2. build query
+		try {
+			Cursor cursor = db.query(TABLE_LAYOUT, // a. table
+					COLUMNS, // b. column names
+					FIELD_TITLE + "=?", // c. selections
+					new String[] { title }, // d. selections args
+					null, // e. group by
+					null, // f. having
+					null, // g. order by
+					null); // h. limit
+			// 3. if we got results get the first one
+			if (cursor != null) {
+				cursor.moveToFirst();
+			}
+			// 4. build book object
+			layout.setId(cursor.getString(0));
+			layout.setTitle(cursor.getString(1));
+			layout.setDesc(cursor.getString(2));
+			layout.setInputType(cursor.getString(3));
+			layout.setSource(cursor.getString(4));
+			// 5. return book
+		} catch (CursorIndexOutOfBoundsException e) {
+			Log.d("mdb", "DBHelper Class, " + "Error:" + e.toString());
+		}
+		
+		return layout;
+	}
 
 	public Layout getLayout(int id) {
 		// 1. get reference to readable DB
@@ -115,13 +153,13 @@ public class DBHelper extends SQLiteOpenHelper {
 			layout.setSource(cursor.getString(4));
 			// 5. return book
 		} catch (CursorIndexOutOfBoundsException e) {
-			Log.d("mdb", "DBHelper, "+"Error:"+e.toString());
+			Log.d("mdb", "DBHelper Class, " + "Error:" + e.toString());
 		}
 		return layout;
 
 	}// end of getLayout
 
-	/*
+	/**
 	 * return List<Layout>
 	 */
 	public List<Layout> getAllLayout() {
@@ -150,7 +188,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				} while (cursor.moveToNext());
 			}
 		} catch (IllegalStateException e) {
-			Log.d("mdb", "DBHelper, "+"Error:"+e.toString());
+			Log.d("mdb", "DBHelper Class, " + "Error:" + e.toString());
 		}
 
 		// return books
@@ -177,6 +215,20 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.update(TABLE_LAYOUT, values, FIELD_ID + "=?",
 				new String[] { String.valueOf(oldLaout.getId()) });
 	}// end of updateLayout
+
+	/**
+	 * 如果Title有重複，則傳回true，反之則false
+	 */
+	public boolean duplicateCheck(String title) {
+		List<Layout> layouts = getAllLayout();
+		for (Layout l : layouts) {
+			if (title.equals(l.getTitle())) {
+				Log.d("mdb", "Duplicate Title");
+				return true;
+			}
+		}
+		return false;
+	}
 
 	// ==============================================================DBControled
 }

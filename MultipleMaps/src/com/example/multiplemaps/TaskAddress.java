@@ -70,10 +70,8 @@ public class TaskAddress extends AsyncTask<Object, Void, LatLngBounds> {
 		} catch (MalformedURLException e) { // URL
 			e.printStackTrace();
 		} catch (IOException e) { // URLConnection
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e) {// JSONObject
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

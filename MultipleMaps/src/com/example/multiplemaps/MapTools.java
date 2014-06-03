@@ -25,8 +25,12 @@ public class MapTools {
 	
 	
 	private HashMap<String, Marker> centerMarker = new HashMap<String, Marker>();
+	
 	/**
 	 * 將關閉時的CameraPosition存到SharedPreferences中。
+	 * @param context 
+	 * @param map
+	 * @param SPName
 	 */
 	public void saveTheLastCameraPosition(Context context, GoogleMap map,
 			String SPName) {
@@ -61,7 +65,9 @@ public class MapTools {
 	}// end of callTheLastCameraPostion()
 
 	/**
-	 * 取得當下ViewRegin的兩邊距離(公尺，float)
+	 * 取得當下ViewRegin的兩邊距離
+	 * @param map
+	 * @return float (m)
 	 */
 	public float getViewRegionHorizontalDistance(GoogleMap map) {
 		// "left"是為lfetLocation命名
@@ -84,6 +90,9 @@ public class MapTools {
 	
 	/**
 	 * 做中心marker
+	 * @param map
+	 * @param position
+	 * @param snippet
 	 */
 	public void displayBoundMarker(GoogleMap map, LatLng position, String snippet) { 
 		MarkerOptions markerOptions = new MarkerOptions();

@@ -65,10 +65,9 @@ public class Example1Activity extends Activity {
 				setLayer((String) parent.getItemAtPosition(position));
 			}
 
-			// OnItemSelectedListener¥²°µªº²Ä¤G­ÓMETHOD
+			// OnItemSelectedListenerï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¤Gï¿½ï¿½METHOD
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
 			}
 		});// end of setOnItemSelectedListener
 	}// end of onCcreate{}
@@ -88,7 +87,7 @@ public class Example1Activity extends Activity {
 				.startActivities();
 				
 			} else {
-				// Â²©öª©¤@¦æ§Y¥i
+				// Â²ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½ï¿½Yï¿½i
 				NavUtils.navigateUpFromSameTask(Example1Activity.this);
 			}
 		}//end of if item.getItemId

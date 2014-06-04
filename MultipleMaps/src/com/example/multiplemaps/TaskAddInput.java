@@ -11,11 +11,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
+public class TaskAddInput extends AsyncTask<Object, Void, Object> {
 	private DBHelper dbHelper; // 寫kmlStringToDataBase
-	private parseKmlString kmlString; // 讀取關鍵
-	private PolygonOptions po;// 輸出
-
+	private parseKmlString kmlString; // kml file to sqlite
+	private PolygonOptions po;
 	@Override
 	protected PolygonOptions doInBackground(Object... params) {
 		Context context = (Context) params[0];
@@ -25,7 +24,6 @@ public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 			br = new BufferedReader(new FileReader(kml));
 			String line;
 			StringBuilder sb = new StringBuilder();
-			
 
 			while ((line = br.readLine()) != null) {
 				sb.append(line.trim());
@@ -33,12 +31,10 @@ public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 			br.close();
 
 			// 將kml存入db，並轉為polygon
-			kmlString = new parseKmlString(sb.toString());
+			 kmlString = new parseKmlString(sb.toString());
 
 			if (kmlString.isKML()) {
-				Log.d("mdb", "Input is a KML file.");
-				
-				//寫到database
+				// 寫到database
 				dbHelper = new DBHelper(context);
 				Layout layout = new Layout();
 				layout.setTitle("PolygonC");
@@ -46,12 +42,11 @@ public class TaskAddInput extends AsyncTask<Object, Void, PolygonOptions> {
 				layout.setInputType("Kml");
 				layout.setSource(sb.toString());
 				dbHelper.addLayout(layout);
-				//
-				Layout l = dbHelper.getLayout("PolygonC");
-				Log.d("mdb", l.getSource());
 				
-				//TODO 應該是return object，然後視情況轉mark or polygon or overlay to display
+				
 				po = new PolygonOptions();
+				po.addAll(kmlString.getCoordinates());
+				
 				return po;
 			} else {
 				// 直接跳出doInBackgroud

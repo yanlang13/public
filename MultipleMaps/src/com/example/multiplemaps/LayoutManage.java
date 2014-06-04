@@ -129,7 +129,7 @@ public class LayoutManage extends Activity {
 		int PRETTY_PRINT_INDENT_FACTOR = 4;
 		try {
 			File sd = Environment.getExternalStorageDirectory();
-			File kmlFrom = new File(sd, "polygonC.kml");
+			File kmlFrom = new File(sd, "polygonC1.kml");
 			File txt = new File(sd, "xmlParsed.txt");
 			
 			BufferedReader br = new BufferedReader(new FileReader(kmlFrom));

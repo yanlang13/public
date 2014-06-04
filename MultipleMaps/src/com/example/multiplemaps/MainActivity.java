@@ -252,7 +252,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					R.id.two_upperMap)).getMap();
 			lowerMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.two_lowerMap)).getMap();
-
+			
 			if (upperMap != null && lowerMap != null) {
 				mapTools.callTheLastCameraPosition(getApplicationContext(),
 						upperMap, THE_LAST_CP);
@@ -417,12 +417,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							File sd = Environment.getExternalStorageDirectory();
-							String inputData = "polygonC.kml";
+							String inputData = "polygonC1.kml";
 							File kml = new File(sd, inputData);
 							new AddInputTask().execute(MainActivity.this, kml);
 						}
 					});
-
+			
 			alertBuilder.setNegativeButton("Cancel",
 					new DialogInterface.OnClickListener() {
 						@Override
@@ -440,6 +440,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	// ====================================================================MenuED
 
 	// ====================================================================Classing
+	/**
+	 * 取得地址的座標，然後moveCameraTo
+	 * @PARM String address
+	 */
 	private class GetAddressTask extends TaskAddress {
 		@Override
 		protected void onPreExecute() {
@@ -470,7 +474,12 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			}
 		}// end of onPostExecute
 	}// end of GetAddressTask
-
+	
+	/**
+	 * parsing kml file and display in map
+	 * @PARM context 
+	 * @PARM kml file
+	 */
 	private class AddInputTask extends TaskAddInput {
 		@Override
 		protected void onPreExecute() {
@@ -478,10 +487,22 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		}
 
 		@Override
-		protected void onPostExecute(PolygonOptions po) {
-			if (po == null) {
+		protected void onPostExecute(Object object) {
+			if (object == null) {
 				Toast.makeText(MainActivity.this, "check your kml file type again",
 						Toast.LENGTH_LONG).show();
+			}else{
+				PolygonOptions po = (PolygonOptions) object;
+				//TODO 不要clear
+				if (disMode == U_MAP |  disMode == L_MAP) {
+					oneMap.clear();
+					oneMap.addPolygon(po);
+				} else {
+					upperMap.clear();
+					lowerMap.clear();
+					upperMap.addPolygon(po);
+					lowerMap.addPolygon(po);
+				}
 			}
 			progressDialog.dismiss();
 		}

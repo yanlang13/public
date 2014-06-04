@@ -101,7 +101,7 @@ public class parseKmlString {
 			// TODO 如果沒有DOCUMENT的description
 			return null;
 		}
-	}
+	}// end of getDescription
 	
 }// end of parseKmlString
 

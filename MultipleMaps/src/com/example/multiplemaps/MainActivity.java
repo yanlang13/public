@@ -224,7 +224,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
 	// ====================================================================onResuming
 
-	/*
+	/**
 	 * SetOneMap，參數是地圖類型
 	 */
 	private void setUpSingleMapIfNeeded(String mapLayoutType) {
@@ -242,7 +242,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		oneMap.setOnMyLocationButtonClickListener(this);
 	}
 
-	/*
+	/**
 	 * SetTwoMap，兩個參數分別是地圖類型
 	 */
 	private void setUpTwoMapIfNeeded(String upperMapLayout,
@@ -252,7 +252,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					R.id.two_upperMap)).getMap();
 			lowerMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.two_lowerMap)).getMap();
-			
+
 			if (upperMap != null && lowerMap != null) {
 				mapTools.callTheLastCameraPosition(getApplicationContext(),
 						upperMap, THE_LAST_CP);
@@ -264,8 +264,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				SyncTools syncTools = new SyncTools(MainActivity.this,
 						upperMap, lowerMap);
 				syncTools.syncTwoMapCameraPosition();
-				
-				//TODO 讓createCirlce受到控制，需要思考整個的邏輯，原先的寫法不足以滿足
+
+				// TODO 讓createCirlce受到控制，需要思考整個的邏輯，原先的寫法不足以滿足
 				syncTools.syncDisplayUserClicked();
 
 				// userUiSetting
@@ -286,7 +286,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		}
 	}// end of setUpLocationClientIfNeeded()
 
-	/*
+	/**
 	 * 接收databases的mapTitle來改變地圖的layoutType
 	 */
 	private void setMapLayoutType(GoogleMap gMap, String mapLayoutType) {
@@ -422,7 +422,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 							new AddInputTask().execute(MainActivity.this, kml);
 						}
 					});
-			
+
 			alertBuilder.setNegativeButton("Cancel",
 					new DialogInterface.OnClickListener() {
 						@Override
@@ -442,6 +442,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	// ====================================================================Classing
 	/**
 	 * 取得地址的座標，然後moveCameraTo
+	 * 
 	 * @PARM String address
 	 */
 	private class GetAddressTask extends TaskAddress {
@@ -474,10 +475,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			}
 		}// end of onPostExecute
 	}// end of GetAddressTask
-	
+
 	/**
 	 * parsing kml file and display in map
-	 * @PARM context 
+	 * 
+	 * @PARM context
 	 * @PARM kml file
 	 */
 	private class AddInputTask extends TaskAddInput {
@@ -489,12 +491,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		@Override
 		protected void onPostExecute(Object object) {
 			if (object == null) {
-				Toast.makeText(MainActivity.this, "check your kml file type again",
-						Toast.LENGTH_LONG).show();
-			}else{
+				Toast.makeText(MainActivity.this,
+						"check your kml file type again", Toast.LENGTH_LONG)
+						.show();
+			} else {
 				PolygonOptions po = (PolygonOptions) object;
-				//TODO 不要clear
-				if (disMode == U_MAP |  disMode == L_MAP) {
+				// TODO 不要clear
+				if (disMode == U_MAP | disMode == L_MAP) {
 					oneMap.clear();
 					oneMap.addPolygon(po);
 				} else {

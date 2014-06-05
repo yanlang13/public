@@ -44,11 +44,13 @@ public class TaskAddInput extends AsyncTask<Object, Void, Object> {
 				layout.setSource(sb.toString());
 				dbHelper.addLayout(layout);
 
-				kmlString.getpolyColor();
+				kmlString.getPolyColor();
 
 				po = new PolygonOptions();
 				po.addAll(kmlString.getCoordinates());
-				po.fillColor(kmlString.getpolyColor());
+				po.fillColor(kmlString.getPolyColor());
+				po.strokeColor(kmlString.getLineColor());
+				po.strokeWidth(kmlString.getLineWidth());
 				return po;
 			} else {
 				// 直接跳出doInBackgroud

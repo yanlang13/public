@@ -500,6 +500,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				if (disMode == U_MAP | disMode == L_MAP) {
 					oneMap.clear();
 					oneMap.addPolygon(po);
+					
 				} else {
 					upperMap.clear();
 					lowerMap.clear();

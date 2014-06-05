@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import com.google.android.gms.maps.model.LatLng;
+
+import android.R.integer;
 import android.graphics.Color;
 import android.util.Log;
 
@@ -42,8 +44,7 @@ public class parseKmlString {
 	}// end of hasDocument
 
 	/**
-	 * 取得kmlSting(JSON)，後抓取coordinates Tag
-	 * 
+	 * get data from kml coordinates
 	 * @return ArrayList LatLng
 	 */
 	public ArrayList<LatLng> getCoordinates() {
@@ -86,7 +87,7 @@ public class parseKmlString {
 			return null;
 		}
 	}// end of getCoordiantes
-
+	
 	public String getDescription() {
 		if (hasDocument()) {
 			try {
@@ -102,46 +103,101 @@ public class parseKmlString {
 			return null;
 		}
 	}// end of getDescription
+
 	/**
-	 * 取得kml的PolyStyl的ARGB color
+	 * get data from kml PoltStyle
 	 * @return int ARGB color
 	 */
-	public int getpolyColor() {
+	public int getPolyColor() {
 		if (hasDocument()) {
 			try {
 				JSONObject style = kml.getJSONObject("Document")
 						.getJSONArray("Style").getJSONObject(1);
 				String abgr = style.getJSONObject("PolyStyle").getString(
 						"color");
-				String stringAlpha = abgr.substring(0, 2);
-				String strinfBlue = abgr.substring(2, 4);
-				String stringGreen = abgr.substring(4, 6);
-				String strinfRed = abgr.substring(6);
+				return kmlColorToARGB(abgr);
 				
-				//主要是透過parseColor將StringARGB轉為int
-				int argb = Color.parseColor("#" + stringAlpha + strinfRed
-						+ stringGreen + strinfBlue);
-				
-			    //轉成alpha(透明度)+RGB，這邊未使用。
-                int alpha = (argb >> 24) & 0xFF;
-                int red = (argb >> 16) & 0xFF;
-                int green = (argb >> 8) & 0xFF;
-                int blue = (argb >> 0) & 0xFF;
-               Log. d("mdb", alpha + " " + red + " " + green + " " + blue);
-
-				return argb;
 			} catch (JSONException e) {
 				Log.d("mdb", "parserkmlString class," + e.toString());
-				return 1;
+				return (Integer) null;
 			} catch (IllegalArgumentException e) { // the colorString can't be
 													// parsed
 				Log.d("mdb", "parserkmlString class," + e.toString());
-				return 1;
+				return (Integer) null;
 			}
 		} else {
-			// TODO 如果沒有DOCUMENT的description
+			// TODO 如果沒有DOCUMENT的get
 			return (Integer) null;
 		}
+	}// end of getpolyColor()
+	
+	/**
+	 * get data from kml LineStyle
+	 * @return int color
+	 */
+	public int getLineColor(){
+		if (hasDocument()) {
+			try {
+				JSONObject style = kml.getJSONObject("Document")
+						.getJSONArray("Style").getJSONObject(1);
+				String abgr = style.getJSONObject("LineStyle").getString(
+						"color");
+				return kmlColorToARGB(abgr);
+				
+			} catch (JSONException e) {
+				Log.d("mdb", "parserkmlString class," + e.toString());
+				return (Integer) null;
+			} catch (IllegalArgumentException e) { // the colorString can't be
+													// parsed
+				Log.d("mdb", "parserkmlString class," + e.toString());
+				return (Integer) null;
+			}
+		} else {
+			// TODO 如果沒有DOCUMENT的get
+			return (Integer) null;
+		}
+	}// end of getLineColor()
+	/**
+	 * get data from kml LineStyle
+	 * @return float width
+	 */
+	public float getLineWidth(){
+		if (hasDocument()) {
+			try {
+				JSONObject style = kml.getJSONObject("Document")
+						.getJSONArray("Style").getJSONObject(1);
+				int width = style.getJSONObject("LineStyle").getInt(
+						"width");
+				return Float.valueOf(width);
+				
+			} catch (JSONException e) {
+				Log.d("mdb", "parserkmlString class," + e.toString());
+				return (Float) null;
+			} catch (IllegalArgumentException e) { // the colorString can't be
+													// parsed
+				Log.d("mdb", "parserkmlString class," + e.toString());
+				return (Float) null;
+			}
+		} else {
+			// TODO 如果沒有DOCUMENT的get
+			return (Integer) null;
+		}
+	}// end of getLineColor()
+	
+	// =============================================================priavteClassing
+	private int kmlColorToARGB(String abgr) {
+		String stringAlpha = abgr.substring(0, 2);
+		String strinfBlue = abgr.substring(2, 4);
+		String stringGreen = abgr.substring(4, 6);
+		String strinfRed = abgr.substring(6);
+
+		// 主要是透過parseColor將StringARGB轉為int
+		int argb = Color.parseColor("#" + stringAlpha + strinfRed + stringGreen
+				+ strinfBlue);
+		return argb;
 	}
+
+	// =============================================================priavteClassed
+
 }// end of parseKmlString
 

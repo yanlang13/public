@@ -3,9 +3,8 @@ package com.example.multiplemaps;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import com.google.android.gms.maps.model.LatLng;
-
+import android.graphics.Color;
 import android.util.Log;
 
 /**
@@ -41,9 +40,10 @@ public class parseKmlString {
 		}
 		return false;
 	}// end of hasDocument
-	
+
 	/**
 	 * 取得kmlSting(JSON)，後抓取coordinates Tag
+	 * 
 	 * @return ArrayList LatLng
 	 */
 	public ArrayList<LatLng> getCoordinates() {
@@ -58,7 +58,7 @@ public class parseKmlString {
 				// 取出的kmlString轉為list，split用 | 分隔使用的分隔符號
 				List<String> listStringCoordinates = new ArrayList<String>(
 						Arrays.asList(coordinates.split(",| ")));
-				
+
 				ArrayList<LatLng> latLngs = new ArrayList<LatLng>();
 
 				int length = listStringCoordinates.size();
@@ -86,8 +86,8 @@ public class parseKmlString {
 			return null;
 		}
 	}// end of getCoordiantes
-	
-	public String getDescription(){
+
+	public String getDescription() {
 		if (hasDocument()) {
 			try {
 				String description = kml.getJSONObject("Document")
@@ -102,6 +102,46 @@ public class parseKmlString {
 			return null;
 		}
 	}// end of getDescription
-	
+	/**
+	 * 取得kml的PolyStyl的ARGB color
+	 * @return int ARGB color
+	 */
+	public int getpolyColor() {
+		if (hasDocument()) {
+			try {
+				JSONObject style = kml.getJSONObject("Document")
+						.getJSONArray("Style").getJSONObject(1);
+				String abgr = style.getJSONObject("PolyStyle").getString(
+						"color");
+				String stringAlpha = abgr.substring(0, 2);
+				String strinfBlue = abgr.substring(2, 4);
+				String stringGreen = abgr.substring(4, 6);
+				String strinfRed = abgr.substring(6);
+				
+				//主要是透過parseColor將StringARGB轉為int
+				int argb = Color.parseColor("#" + stringAlpha + strinfRed
+						+ stringGreen + strinfBlue);
+				
+			    //轉成alpha(透明度)+RGB，這邊未使用。
+                int alpha = (argb >> 24) & 0xFF;
+                int red = (argb >> 16) & 0xFF;
+                int green = (argb >> 8) & 0xFF;
+                int blue = (argb >> 0) & 0xFF;
+               Log. d("mdb", alpha + " " + red + " " + green + " " + blue);
+
+				return argb;
+			} catch (JSONException e) {
+				Log.d("mdb", "parserkmlString class," + e.toString());
+				return 1;
+			} catch (IllegalArgumentException e) { // the colorString can't be
+													// parsed
+				Log.d("mdb", "parserkmlString class," + e.toString());
+				return 1;
+			}
+		} else {
+			// TODO 如果沒有DOCUMENT的description
+			return (Integer) null;
+		}
+	}
 }// end of parseKmlString
 

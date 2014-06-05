@@ -15,6 +15,7 @@ public class TaskAddInput extends AsyncTask<Object, Void, Object> {
 	private DBHelper dbHelper; // 寫kmlStringToDataBase
 	private parseKmlString kmlString; // kml file to sqlite
 	private PolygonOptions po;
+
 	@Override
 	protected PolygonOptions doInBackground(Object... params) {
 		Context context = (Context) params[0];
@@ -31,7 +32,7 @@ public class TaskAddInput extends AsyncTask<Object, Void, Object> {
 			br.close();
 
 			// 將kml存入db，並轉為polygon
-			 kmlString = new parseKmlString(sb.toString());
+			kmlString = new parseKmlString(sb.toString());
 
 			if (kmlString.isKML()) {
 				// 寫到database
@@ -42,11 +43,12 @@ public class TaskAddInput extends AsyncTask<Object, Void, Object> {
 				layout.setInputType("Kml");
 				layout.setSource(sb.toString());
 				dbHelper.addLayout(layout);
-				
-				
+
+				kmlString.getpolyColor();
+
 				po = new PolygonOptions();
 				po.addAll(kmlString.getCoordinates());
-				
+				po.fillColor(kmlString.getpolyColor());
 				return po;
 			} else {
 				// 直接跳出doInBackgroud

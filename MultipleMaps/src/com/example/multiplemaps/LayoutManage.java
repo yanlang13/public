@@ -53,7 +53,8 @@ public class LayoutManage extends Activity {
 		tvKML = (TextView) findViewById(R.id.tv_manage_GeoJSON);
 		// textview scrolling, 搭配.xml的 android:scrollbars = "vertical"
 		tvKML.setMovementMethod(new ScrollingMovementMethod());
-
+		
+		//setLayoutList處理
 		listId = new ArrayList<String>();
 		listTitle = new ArrayList<String>();
 		listDesc = new ArrayList<String>();
@@ -83,6 +84,7 @@ public class LayoutManage extends Activity {
 		spUMap.setSelection(ds.getUpperSpinnerPosition());
 		spLMap.setAdapter(adapter);
 		spLMap.setSelection(ds.getLowerSpinnerPosition());
+		Log.d("mdb", "get"+ ds.getLowerSpinnerPosition()+"");
 		spinnerSelected(spUMap, tvUMap, true);
 		spinnerSelected(spLMap, tvLMap, false);
 	}
@@ -97,12 +99,13 @@ public class LayoutManage extends Activity {
 					int position, long id) {
 				tv1.setText(listDesc.get(position));
 				if (upOrNot1) {
-					ds.setUpperMapLayout(listTitle.get(position));
+					ds.setUpperMapLayoutFrom(listId.get(position));
 					ds.setUpperSpinnerPosition(position);
 				}
 				if (!upOrNot1) {
-					ds.setLowerMapLayout(listTitle.get(position));
+					ds.setLowerMapLayoutFrom(listId.get(position));
 					ds.setLowerSpinnerPosition(position);
+					Log.d("mdb", "p: " +position+"");
 				}
 			}
 

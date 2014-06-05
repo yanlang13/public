@@ -122,17 +122,19 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		//處理要放哪個底圖
 		if (disMode == U_MAP) {
-			String upperMapLayout = ds.getUpperMapLayout();
-			setUpSingleMapIfNeeded(upperMapLayout);
+			String upperMapLayoutFrom = ds.getUpperMapLayout();
+			setUpSingleMapIfNeeded(upperMapLayoutFrom);
 		} else if (disMode == L_MAP) {
 			String lowerMapLayout = ds.getLowerMapLayout();
 			setUpSingleMapIfNeeded(lowerMapLayout);
 		} else {
-			String upperMapLayout = ds.getUpperMapLayout();
-			String lowerMapLayout = ds.getLowerMapLayout();
-			setUpTwoMapIfNeeded(upperMapLayout, lowerMapLayout);
-		}
+			String upperMapLayoutFrom = ds.getUpperMapLayout();
+			String lowerMapLayoutFrom = ds.getLowerMapLayout();
+			setUpTwoMapIfNeeded(upperMapLayoutFrom, lowerMapLayoutFrom);
+		}//end of if
 		setUpLocationClientIfNeeded();
 	}// end of onResume()
 
@@ -225,28 +227,29 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	// ====================================================================onResuming
 
 	/**
-	 * SetOneMap，參數是地圖類型
+	 * @param id from database
 	 */
-	private void setUpSingleMapIfNeeded(String mapLayoutType) {
+	private void setUpSingleMapIfNeeded(String id) {
 		if (oneMap == null) {
 			oneMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.single_OneMap)).getMap();
 			if (oneMap != null) {
 				mapTools.callTheLastCameraPosition(getApplicationContext(),
 						oneMap, THE_LAST_CP);
-				setMapLayoutType(oneMap, mapLayoutType);
+				setMapLayoutType(oneMap, id);
 			}
 		}
 
 		oneMap.setMyLocationEnabled(true);
 		oneMap.setOnMyLocationButtonClickListener(this);
 	}
-
+	
 	/**
-	 * SetTwoMap，兩個參數分別是地圖類型
+	 * @param upperMapId :id from database
+	 * @param lowerMapId :id from database
 	 */
-	private void setUpTwoMapIfNeeded(String upperMapLayout,
-			String lowerMapLayout) { // call from onResume()
+	private void setUpTwoMapIfNeeded(String upperMapId,
+			String lowerMapId) { // call from onResume()
 		if (upperMap == null || lowerMap == null) {
 			upperMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.two_upperMap)).getMap();
@@ -271,8 +274,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				// userUiSetting
 				upperMap.setMyLocationEnabled(true);
 				upperMap.setOnMyLocationButtonClickListener(this);
-				setMapLayoutType(upperMap, upperMapLayout);
-				setMapLayoutType(lowerMap, lowerMapLayout);
+				
+				
+				setMapLayoutType(upperMap, upperMapId);
+				setMapLayoutType(lowerMap, lowerMapId);
 
 			}// end of if
 		}// end of setUpMapIfNeeded()
@@ -285,23 +290,23 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					this);
 		}
 	}// end of setUpLocationClientIfNeeded()
-
+	
 	/**
 	 * 接收databases的mapTitle來改變地圖的layoutType
 	 */
-	private void setMapLayoutType(GoogleMap gMap, String mapLayoutType) {
-		if (mapLayoutType.equals("GoogleMap NONE")) {
+	private void setMapLayoutType(GoogleMap gMap, String mapLayoutId) {
+		if (mapLayoutId.equals("1")) {
 			gMap.setMapType(MAP_TYPE_NONE);
-		} else if (mapLayoutType.equals("GoogleMap NORMAL")) {
+		} else if (mapLayoutId.equals("2")) {
 			gMap.setMapType(MAP_TYPE_NORMAL);
-		} else if (mapLayoutType.equals("GoogleMap HYBRID")) {
+		} else if (mapLayoutId.equals("3")) {
 			gMap.setMapType(MAP_TYPE_HYBRID);
-		} else if (mapLayoutType.equals("GoogleMap SATELLITE")) {
+		} else if (mapLayoutId.equals("4")) {
 			gMap.setMapType(MAP_TYPE_SATELLITE);
-		} else if (mapLayoutType.equals("GoogleMap TERRAIN")) {
+		} else if (mapLayoutId.equals("5")) {
 			gMap.setMapType(MAP_TYPE_TERRAIN);
 		} else {
-			Log.d("mdg", "Error setting layer with name " + mapLayoutType);
+			Log.d("mdg", "Error setting layer with name " + mapLayoutId);
 		}
 	}// end of setMapLayoutType
 

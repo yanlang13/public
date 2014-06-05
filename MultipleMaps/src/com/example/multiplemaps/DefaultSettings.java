@@ -32,36 +32,42 @@ public class DefaultSettings {
 		defaultSettings.commit();
 	}// end of setDisMode
 
-	public void setUpperMapLayout(String type) {
-		defaultSettings.putString(UPPER_MAP_LAYOUT, type);
+	public void setUpperMapLayoutFrom(String id) {
+		defaultSettings.putString(UPPER_MAP_LAYOUT, id);
 		defaultSettings.commit();
 	}// end of setUpperMapLayout
 
 	public String getUpperMapLayout() {
-		return sharedSettings.getString(UPPER_MAP_LAYOUT, "GoogleMap NORMAL");
+		return sharedSettings.getString(UPPER_MAP_LAYOUT, "1");
 	}// end of getUpperMapLayout
 
-	public void setLowerMapLayout(String type) {
-		defaultSettings.putString(LOWER_MAP_LAYOUT, type);
+	public void setLowerMapLayoutFrom(String id) {
+		defaultSettings.putString(LOWER_MAP_LAYOUT, id);
 		defaultSettings.commit();
 	}// end of setLowerMapLayout
 
 	public String getLowerMapLayout() {
-		return sharedSettings.getString(LOWER_MAP_LAYOUT, "GoogleMap NORMAL");
+		return sharedSettings.getString(LOWER_MAP_LAYOUT, "1");
 	}// end of getLowerMapLayout
-
+	
+	//存LayoutManage UpperSpinner選擇的項目
 	public void setUpperSpinnerPosition(int position) {
 		defaultSettings.putInt(UPPER_MAP_SPINNER_POSITION, position);
+		defaultSettings.commit();
 	}// end of setUpperSpinnerPosition
-
+	
+	//存LayoutManage LowerSpinner選擇的項目
 	public void setLowerSpinnerPosition(int position) {
 		defaultSettings.putInt(LOWER_MAP_SPINNER_POSITION, position);
+		defaultSettings.commit();
 	}// end of setLowerSpinnerPosition
-
+	
+	//取LayoutManage UpperSpinner選擇的項目
 	public int getUpperSpinnerPosition() {
 		return sharedSettings.getInt(UPPER_MAP_SPINNER_POSITION, 1);
 	}// end of getUpperSpinnerPosition
-
+	
+	//取LayoutManage LowerSpinner選擇的項目
 	public int getLowerSpinnerPosition() {
 		return sharedSettings.getInt(LOWER_MAP_SPINNER_POSITION, 1);
 	}// end of getLowerSpinnerPosition

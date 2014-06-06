@@ -46,7 +46,7 @@ public class Layout {
 			return source;
 	}
 
-	/*
+	/**
 	 * 不要自己設id，dbHepler會幫忙自動設定
 	 */
 	public void setId(String id) {

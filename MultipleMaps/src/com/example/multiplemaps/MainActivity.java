@@ -95,7 +95,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		super.onCreate(savedInstanceState);
 		ds = new DefaultSettings(MainActivity.this);
 		disMode = ds.getDisMode();
-
+		dbHelper = new DBHelper(this);
+		Log.d("mdb", "" + dbHelper.getLayoutCount());
 		if (disMode == L_MAP | disMode == U_MAP) {
 			setContentView(R.layout.single_maps);
 		} else {
@@ -122,8 +123,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		//處理要放哪個底圖
+
+		// 處理要放哪個底圖
 		if (disMode == U_MAP) {
 			String upperMapLayoutFrom = ds.getUpperMapLayout();
 			setUpSingleMapIfNeeded(upperMapLayoutFrom);
@@ -134,7 +135,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 			String upperMapLayoutFrom = ds.getUpperMapLayout();
 			String lowerMapLayoutFrom = ds.getLowerMapLayout();
 			setUpTwoMapIfNeeded(upperMapLayoutFrom, lowerMapLayoutFrom);
-		}//end of if
+		}// end of if
 		setUpLocationClientIfNeeded();
 	}// end of onResume()
 
@@ -227,7 +228,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	// ====================================================================onResuming
 
 	/**
-	 * @param id from database
+	 * @param id
+	 *            from database
 	 */
 	private void setUpSingleMapIfNeeded(String id) {
 		if (oneMap == null) {
@@ -243,13 +245,16 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		oneMap.setMyLocationEnabled(true);
 		oneMap.setOnMyLocationButtonClickListener(this);
 	}
-	
+
 	/**
-	 * @param upperMapId :id from database
-	 * @param lowerMapId :id from database
+	 * @param upperMapId
+	 *            :id from database
+	 * @param lowerMapId
+	 *            :id from database
 	 */
-	private void setUpTwoMapIfNeeded(String upperMapId,
-			String lowerMapId) { // call from onResume()
+	private void setUpTwoMapIfNeeded(String upperMapId, String lowerMapId) { // call
+																				// from
+																				// onResume()
 		if (upperMap == null || lowerMap == null) {
 			upperMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.two_upperMap)).getMap();
@@ -274,8 +279,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				// userUiSetting
 				upperMap.setMyLocationEnabled(true);
 				upperMap.setOnMyLocationButtonClickListener(this);
-				
-				
+
 				setMapLayoutType(upperMap, upperMapId);
 				setMapLayoutType(lowerMap, lowerMapId);
 
@@ -290,7 +294,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 					this);
 		}
 	}// end of setUpLocationClientIfNeeded()
-	
+
 	/**
 	 * 接收databases的mapTitle來改變地圖的layoutType
 	 */
@@ -505,7 +509,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 				if (disMode == U_MAP | disMode == L_MAP) {
 					oneMap.clear();
 					oneMap.addPolygon(po);
-					
+
 				} else {
 					upperMap.clear();
 					lowerMap.clear();

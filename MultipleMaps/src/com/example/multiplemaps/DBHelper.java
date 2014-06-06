@@ -86,7 +86,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			// 3. insert
 			db.insert(TABLE_LAYOUT, null, values);
 		}
-
 		// 4. close
 		db.close();
 	}// end of addLayout
@@ -123,7 +122,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		} catch (CursorIndexOutOfBoundsException e) {
 			Log.d("mdb", "DBHelper Class, " + "Error:" + e.toString());
 		}
-		
+		db.close();
 		return layout;
 	}
 
@@ -155,6 +154,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		} catch (CursorIndexOutOfBoundsException e) {
 			Log.d("mdb", "DBHelper Class, " + "Error:" + e.toString());
 		}
+		
+		db.close();
 		return layout;
 
 	}// end of getLayout
@@ -190,7 +191,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		} catch (IllegalStateException e) {
 			Log.d("mdb", "DBHelper Class, " + "Error:" + e.toString());
 		}
-
+		db.close();
 		// return books
 		return layouts;
 	}// end of getAllLayout()
@@ -204,8 +205,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		// 3. close
 		db.close();
 	}// end of deleteLayout
-
-	public void updateLayoutRow(Layout oldLaout, Layout newLayout) {
+	
+	/** 
+	 * @param oldLayout 使用getLayout(int id)來取得
+	 * @param newLayout
+	 */
+	public void updateLayoutRow(Layout oldLayout, Layout newLayout) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(FIELD_TITLE, newLayout.getTitle());
@@ -213,7 +218,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put(FIELD_INPUT_TYPE, newLayout.getInputType());
 		values.put(FIELD_SOURCE, newLayout.getSource());
 		db.update(TABLE_LAYOUT, values, FIELD_ID + "=?",
-				new String[] { String.valueOf(oldLaout.getId()) });
+				new String[] { String.valueOf(oldLayout.getId()) });
+		db.close();
 	}// end of updateLayout
 
 	/**
@@ -229,6 +235,18 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		return false;
 	}
-
+	
+	public int getLayoutCount(){
+		SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT  * FROM " + TABLE_LAYOUT;
+        Cursor cursor = db.rawQuery(query, null);
+        int count = cursor.getCount();
+        cursor.close();
+        db.close();
+        // return count
+        return count;
+	}// end of getLayoutCount
+ 
+	
 	// ==============================================================DBControled
 }

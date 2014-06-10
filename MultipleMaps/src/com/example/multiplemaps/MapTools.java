@@ -1,7 +1,9 @@
 package com.example.multiplemaps;
 
 import java.util.HashMap;
+import java.util.List;
 
+import android.R.integer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -13,22 +15,25 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
+
+import de.micromata.opengis.kml.v_2_2_0.Polygon;
 
 public class MapTools {
-	
-	//using in save and call TheLastCameraPosition
+
+	// using in save and call TheLastCameraPosition
 	private static final String Lat = "Latitude";
 	private static final String Lng = "Langitude";
 	private static final String Tilt = "Tilt";
 	private static final String Bearing = "Bearing";
 	private static final String Zoom = "Zoom";
-	
-	
+
 	private HashMap<String, Marker> centerMarker = new HashMap<String, Marker>();
-	
+
 	/**
 	 * 將關閉時的CameraPosition存到SharedPreferences中。
-	 * @param context 
+	 * 
+	 * @param context
 	 * @param map
 	 * @param SPName
 	 */
@@ -55,7 +60,7 @@ public class MapTools {
 				Context.MODE_PRIVATE);
 		double latitude = Double.valueOf(sp.getString(Lat, "0"));
 		double longitude = Double.valueOf(sp.getString(Lng, "0"));
-		
+
 		float tilt = sp.getFloat(Tilt, 0);
 		float bearing = sp.getFloat(Bearing, 0);
 		float zoom = sp.getFloat(Zoom, 0);
@@ -66,6 +71,7 @@ public class MapTools {
 
 	/**
 	 * 取得當下ViewRegin的兩邊距離
+	 * 
 	 * @param map
 	 * @return float (m)
 	 */
@@ -87,14 +93,16 @@ public class MapTools {
 				.setLongitude(map.getProjection().getVisibleRegion().farRight.longitude);
 		return leftLocation.distanceTo(rightLocation);
 	}// end of getViewRegionHorizontalDistance
-	
+
 	/**
 	 * 做中心marker
+	 * 
 	 * @param map
 	 * @param position
 	 * @param snippet
 	 */
-	public void displayBoundMarker(GoogleMap map, LatLng position, String snippet) { 
+	public void displayBoundMarker(GoogleMap map, LatLng position,
+			String snippet) {
 		MarkerOptions markerOptions = new MarkerOptions();
 		markerOptions.snippet(snippet);
 		markerOptions.title("Input:");
@@ -112,5 +120,38 @@ public class MapTools {
 			centerMarker.put(key, tempMarker);
 		}
 	}// end of displayBoundMarker
-	
+
+	/**
+	 * point in polygon
+	 * 
+	 * @param point 點擊的位置
+	 * @param po polygonOptions
+	 * @return if point in polygon return true, else return false;
+	 */
+	public boolean containsInPolygon(LatLng point, PolygonOptions po) {
+		boolean oddTransitions = false;
+		List<LatLng> verticesPolygon = po.getPoints();
+		float x = (float) point.latitude;
+		float y = (float) point.longitude;
+
+		int verticesSize = po.getPoints().size();
+		float[] polyX = new float[verticesSize];
+		float[] polyY = new float[verticesSize];
+
+		for (int i = 0; i < verticesSize; i++) {
+			polyX[i] = (float) verticesPolygon.get(i).latitude;
+			polyY[i] = (float) verticesPolygon.get(i).longitude;
+		}
+
+		for (int i = 0, j = verticesSize - 1; i < verticesSize; j = i++) {
+			if ((polyY[i] < y && polyY[j] >= y)
+					|| (polyY[j] < y && polyY[i] >= y)
+					&& (polyX[i] <= x || polyX[j] <=x )){
+				if(polyX[i] + (y- polyY[i]) / (polyY[j] - polyY[i]) * (polyX[j] - polyX[i]) < x){
+					oddTransitions = !oddTransitions;
+				}
+			}
+		}
+		return oddTransitions;
+	}// end of checkPointInPolygon
 }

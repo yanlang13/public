@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import com.google.android.gms.maps.model.LatLng;
 
-import android.R.integer;
 import android.graphics.Color;
 import android.util.Log;
 
 /**
- * 處理kmlString
+ * 將kml的String轉成JSON formats
  * 
  */
 public class parseKmlString {

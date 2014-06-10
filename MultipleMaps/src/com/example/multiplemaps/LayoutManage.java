@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LayoutManage extends Activity {
 	private Spinner spUMap, spLMap;
@@ -38,6 +39,9 @@ public class LayoutManage extends Activity {
 	private List<Layout> layouts;
 	private DBHelper dbHelper;
 	private DefaultSettings ds;
+
+	// 測試用，input的polygon file name
+	private String INPUT_KML_FILE = "twopolygon.kml";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +57,8 @@ public class LayoutManage extends Activity {
 		tvKML = (TextView) findViewById(R.id.tv_manage_GeoJSON);
 		// textview scrolling, 搭配.xml的 android:scrollbars = "vertical"
 		tvKML.setMovementMethod(new ScrollingMovementMethod());
-		
-		//setLayoutList處理
+
+		// setLayoutList處理
 		listId = new ArrayList<String>();
 		listTitle = new ArrayList<String>();
 		listDesc = new ArrayList<String>();
@@ -84,7 +88,7 @@ public class LayoutManage extends Activity {
 		spUMap.setSelection(ds.getUpperSpinnerPosition());
 		spLMap.setAdapter(adapter);
 		spLMap.setSelection(ds.getLowerSpinnerPosition());
-		Log.d("mdb", "get"+ ds.getLowerSpinnerPosition()+"");
+		Log.d("mdb", "get" + ds.getLowerSpinnerPosition() + "");
 		spinnerSelected(spUMap, tvUMap, true);
 		spinnerSelected(spLMap, tvLMap, false);
 	}
@@ -105,7 +109,7 @@ public class LayoutManage extends Activity {
 				if (!upOrNot1) {
 					ds.setLowerMapLayoutFrom(listId.get(position));
 					ds.setLowerSpinnerPosition(position);
-					Log.d("mdb", "p: " +position+"");
+					Log.d("mdb", "p: " + position + "");
 				}
 			}
 
@@ -127,14 +131,16 @@ public class LayoutManage extends Activity {
 		}
 		dbHelper.close();
 	}// end of setLayoutList
-	
-	public void parseKMLtoText(View view){ //onClick
+
+	public void parseKMLtoText(View view) { // onClick
 		int PRETTY_PRINT_INDENT_FACTOR = 4;
 		try {
 			File sd = Environment.getExternalStorageDirectory();
-			File kmlFrom = new File(sd, "polygonC1.kml");
+			File kmlFrom = new File(sd, INPUT_KML_FILE);
+			Toast.makeText(LayoutManage.this, "input file is " + INPUT_KML_FILE,
+					Toast.LENGTH_SHORT).show();
 			File txt = new File(sd, "xmlParsed.txt");
-			
+
 			BufferedReader br = new BufferedReader(new FileReader(kmlFrom));
 			String line;
 			StringBuilder sb = new StringBuilder();
@@ -153,15 +159,14 @@ public class LayoutManage extends Activity {
 			tvKML.setText(jsonPrettyPrintString);
 			bw.write(jsonPrettyPrintString);
 			bw.close();
-			
+
 		} catch (IOException e) {
 			Log.d("mdb", "LayoutManage, " + e.toString());
 		} catch (JSONException e) {
 			Log.d("mdb", e.toString());
 		}
 	}
-	
-	
+
 	public void exportDatabase(View view) {
 		OtherTools.copyDBtoSDcard();
 	}// end of exportDatabase

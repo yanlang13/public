@@ -1,6 +1,5 @@
 package com.example.multiplemaps;
 
-
 public class Layout {
 	private String id;
 	private String title;
@@ -69,3 +68,5 @@ public class Layout {
 		this.source = source;
 	}
 }
+
+

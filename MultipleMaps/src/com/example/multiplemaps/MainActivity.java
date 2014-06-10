@@ -17,6 +17,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -87,7 +88,10 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	// 新增kml
 	private DBHelper dbHelper;
 	private SQLiteDatabase db;
-
+	
+	//測試用，input的polygon file name
+	private String INPUT_KML_FILE ="PolygonC1.kml";
+	
 	// ====================================================================Declared
 
 	@Override
@@ -95,8 +99,6 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		super.onCreate(savedInstanceState);
 		ds = new DefaultSettings(MainActivity.this);
 		disMode = ds.getDisMode();
-		dbHelper = new DBHelper(this);
-		Log.d("mdb", "" + dbHelper.getLayoutCount());
 		if (disMode == L_MAP | disMode == U_MAP) {
 			setContentView(R.layout.single_maps);
 		} else {
@@ -128,6 +130,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		if (disMode == U_MAP) {
 			String upperMapLayoutFrom = ds.getUpperMapLayout();
 			setUpSingleMapIfNeeded(upperMapLayoutFrom);
+			
 		} else if (disMode == L_MAP) {
 			String lowerMapLayout = ds.getLowerMapLayout();
 			setUpSingleMapIfNeeded(lowerMapLayout);
@@ -426,7 +429,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							File sd = Environment.getExternalStorageDirectory();
-							String inputData = "polygonC1.kml";
+							String inputData = INPUT_KML_FILE;
 							File kml = new File(sd, inputData);
 							new AddInputTask().execute(MainActivity.this, kml);
 						}
@@ -505,11 +508,28 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 						.show();
 			} else {
 				PolygonOptions po = (PolygonOptions) object;
+				Log.d("mdb", po.getPoints().toString());
+				
 				// TODO 不要clear
 				if (disMode == U_MAP | disMode == L_MAP) {
 					oneMap.clear();
 					oneMap.addPolygon(po);
-
+					
+					final PolygonOptions po1 = po;
+					//TODO 點擊POLYGON時，顯示INFOWINDOW
+					oneMap.setOnMapLongClickListener(new OnMapLongClickListener() {
+						@Override
+						public void onMapLongClick(LatLng point) {
+							if(mapTools.containsInPolygon(point, po1)){
+								Toast.makeText(MainActivity.this, "point in polygon", Toast.LENGTH_SHORT).show();
+							}else {
+								Toast.makeText(MainActivity.this, "point isn't in polygon", Toast.LENGTH_SHORT).show();
+							}
+						}
+					});
+					
+					
+					
 				} else {
 					upperMap.clear();
 					lowerMap.clear();

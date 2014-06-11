@@ -123,7 +123,6 @@ public class MapTools {
 
 	/**
 	 * point in polygon
-	 * 
 	 * @param point 點擊的位置
 	 * @param po polygonOptions
 	 * @return if point in polygon return true, else return false;

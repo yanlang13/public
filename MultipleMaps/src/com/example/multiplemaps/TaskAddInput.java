@@ -8,7 +8,7 @@ import java.io.IOException;
 import com.google.android.gms.maps.model.PolygonOptions;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.util.Log; 
 
 public class TaskAddInput extends AsyncTask<Object, Void, Object> {
 	private DBHelper dbHelper; // 寫kmlStringToDataBase

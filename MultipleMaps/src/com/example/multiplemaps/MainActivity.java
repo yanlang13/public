@@ -89,12 +89,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 	private static final int TWO_MAP = 3;// show two map
 	private int disMode; // 用以確認現在地圖顯示模式
 
-	// 新增kml
-	private DBHelper dbHelper;
-	private SQLiteDatabase db;
-
 	// 測試用，input的polygon file name
-	private String INPUT_KML_FILE = "PolygonC1.kml";
+	private String INPUT_KML_FILE = "twopolygon.kml";
 
 	// ====================================================================Declared
 
@@ -508,7 +504,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 		protected void onPostExecute(Object object) {
 			if (object == null) {
 				Toast.makeText(MainActivity.this,
-						"check your kml file type again", Toast.LENGTH_LONG)
+						"check your input source", Toast.LENGTH_LONG)
 						.show();
 			} else {
 				PolygonOptions po = (PolygonOptions) object;

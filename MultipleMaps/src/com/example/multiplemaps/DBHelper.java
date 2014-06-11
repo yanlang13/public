@@ -75,21 +75,23 @@ public class DBHelper extends SQLiteOpenHelper {
 	// ==============================================================DBControl
 	public void addLayout(Layout layout) {
 		// 1. get reference to writable DB
-		SQLiteDatabase db = this.getWritableDatabase();
+		//這邊duplicateCheck會關閉db，所以將db放到裡面，開關才不會錯誤
 		if (!duplicateCheck(layout.getTitle())) {
+			SQLiteDatabase db = this.getWritableDatabase();
 			// 2. create ContentValues to add key "column"/value
 			ContentValues values = new ContentValues();
 			values.put(FIELD_TITLE, layout.getTitle());
 			values.put(FIELD_DESC, layout.getDesc());
 			values.put(FIELD_INPUT_TYPE, layout.getInputType());
 			values.put(FIELD_SOURCE, layout.getSource());
+			
 			// 3. insert
 			db.insert(TABLE_LAYOUT, null, values);
+			// 4. close
+			db.close();
 		}
-		// 4. close
-		db.close();
 	}// end of addLayout
-	
+
 	/**
 	 * @param title
 	 * @return layout
@@ -154,7 +156,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		} catch (CursorIndexOutOfBoundsException e) {
 			Log.d("mdb", "DBHelper Class, " + "Error:" + e.toString());
 		}
-		
+
 		db.close();
 		return layout;
 
@@ -205,9 +207,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		// 3. close
 		db.close();
 	}// end of deleteLayout
-	
-	/** 
-	 * @param oldLayout 使用getLayout(int id)來取得
+
+	/**
+	 * @param oldLayout
+	 *            使用getLayout(int id)來取得
 	 * @param newLayout
 	 */
 	public void updateLayoutRow(Layout oldLayout, Layout newLayout) {
@@ -226,6 +229,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * 如果Title有重複，則傳回true，反之則false
 	 */
 	public boolean duplicateCheck(String title) {
+		//getAllLayout() 有開關db
 		List<Layout> layouts = getAllLayout();
 		for (Layout l : layouts) {
 			if (title.equals(l.getTitle())) {
@@ -235,18 +239,17 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		return false;
 	}
-	
-	public int getLayoutCount(){
+
+	public int getLayoutCount() {
 		SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT  * FROM " + TABLE_LAYOUT;
-        Cursor cursor = db.rawQuery(query, null);
-        int count = cursor.getCount();
-        cursor.close();
-        db.close();
-        // return count
-        return count;
+		String query = "SELECT  * FROM " + TABLE_LAYOUT;
+		Cursor cursor = db.rawQuery(query, null);
+		int count = cursor.getCount();
+		cursor.close();
+		db.close();
+		// return count
+		return count;
 	}// end of getLayoutCount
- 
-	
+
 	// ==============================================================DBControled
 }

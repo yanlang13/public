@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import com.google.android.gms.maps.model.PolygonOptions;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -38,19 +37,14 @@ public class TaskAddInput extends AsyncTask<Object, Void, Object> {
 				// 寫到database
 				dbHelper = new DBHelper(context);
 				Layout layout = new Layout();
-				layout.setTitle("PolygonC");
+				layout.setTitle("Two Plyogon Example");
 				layout.setDesc("test kml");
 				layout.setInputType("Kml");
 				layout.setSource(sb.toString());
 				dbHelper.addLayout(layout);
+				
 
-				kmlString.getPolyColor();
-
-				po = new PolygonOptions();
-				po.addAll(kmlString.getCoordinates());
-				po.fillColor(kmlString.getPolyColor());
-				po.strokeColor(kmlString.getLineColor());
-				po.strokeWidth(kmlString.getLineWidth());
+				//TODO return List polygonOptions
 				return po;
 			} else {
 				// 直接跳出doInBackgroud

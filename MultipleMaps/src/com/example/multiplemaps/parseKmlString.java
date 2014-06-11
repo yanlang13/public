@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.graphics.Color;
+import android.text.GetChars;
 import android.util.Log;
 
 /**
@@ -42,8 +43,18 @@ public class parseKmlString {
 		return false;
 	}// end of hasDocument
 
+	public boolean hasFolder() {
+		if (hasDocument()) {
+			if (kml.getJSONObject("Document").has("Folder")) {
+				return true;
+			}
+		}
+		return false;
+	}// end of hasDocument
+
 	/**
 	 * get data from kml coordinates
+	 * 
 	 * @return ArrayList LatLng
 	 */
 	public ArrayList<LatLng> getCoordinates() {
@@ -86,7 +97,12 @@ public class parseKmlString {
 			return null;
 		}
 	}// end of getCoordiantes
-	
+
+	/**
+	 * get data from kml description
+	 * 
+	 * @return String
+	 */
 	public String getDescription() {
 		if (hasDocument()) {
 			try {
@@ -104,7 +120,24 @@ public class parseKmlString {
 	}// end of getDescription
 
 	/**
+	 * get data from kml Style_id
+	 * 
+	 * @return int ARGB color
+	 */
+	public String[] getDrawId() {
+		if (hasDocument()){
+			kml.getJSONObject("Document").length();
+			kml.getJSONObject("Document").getJSONArray("id");
+			return null;
+		}else {
+			return null;
+		}
+
+	}// end of getDrawId
+
+	/**
 	 * get data from kml PoltStyle
+	 * 
 	 * @return int ARGB color
 	 */
 	public int getPolyColor() {
@@ -115,7 +148,7 @@ public class parseKmlString {
 				String abgr = style.getJSONObject("PolyStyle").getString(
 						"color");
 				return kmlColorToARGB(abgr);
-				
+
 			} catch (JSONException e) {
 				Log.d("mdb", "parserkmlString class," + e.toString());
 				return (Integer) null;
@@ -129,12 +162,13 @@ public class parseKmlString {
 			return (Integer) null;
 		}
 	}// end of getpolyColor()
-	
+
 	/**
 	 * get data from kml LineStyle
+	 * 
 	 * @return int color
 	 */
-	public int getLineColor(){
+	public int getLineColor() {
 		if (hasDocument()) {
 			try {
 				JSONObject style = kml.getJSONObject("Document")
@@ -142,7 +176,7 @@ public class parseKmlString {
 				String abgr = style.getJSONObject("LineStyle").getString(
 						"color");
 				return kmlColorToARGB(abgr);
-				
+
 			} catch (JSONException e) {
 				Log.d("mdb", "parserkmlString class," + e.toString());
 				return (Integer) null;
@@ -156,19 +190,20 @@ public class parseKmlString {
 			return (Integer) null;
 		}
 	}// end of getLineColor()
+
 	/**
 	 * get data from kml LineStyle
+	 * 
 	 * @return float width
 	 */
-	public float getLineWidth(){
+	public float getLineWidth() {
 		if (hasDocument()) {
 			try {
 				JSONObject style = kml.getJSONObject("Document")
 						.getJSONArray("Style").getJSONObject(1);
-				int width = style.getJSONObject("LineStyle").getInt(
-						"width");
+				int width = style.getJSONObject("LineStyle").getInt("width");
 				return Float.valueOf(width);
-				
+
 			} catch (JSONException e) {
 				Log.d("mdb", "parserkmlString class," + e.toString());
 				return (Float) null;
@@ -182,8 +217,8 @@ public class parseKmlString {
 			return (Integer) null;
 		}
 	}// end of getLineColor()
-	
-	// =============================================================priavteClassing
+
+	// =============================================================priavteMethodsing
 	private int kmlColorToARGB(String abgr) {
 		String stringAlpha = abgr.substring(0, 2);
 		String strinfBlue = abgr.substring(2, 4);
@@ -195,7 +230,7 @@ public class parseKmlString {
 				+ strinfBlue);
 		return argb;
 	}
-	// =============================================================priavteClassed
+	// =============================================================priavteMethodsed
 
 }// end of parseKmlString
 

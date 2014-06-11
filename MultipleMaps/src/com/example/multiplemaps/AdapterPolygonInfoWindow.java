@@ -26,6 +26,7 @@ public class AdapterPolygonInfoWindow implements InfoWindowAdapter {
 	public View getInfoContents(Marker marker) {
 		// 這邊return view的話，會有default的設計(白底,called if getInfoWodow return null
 		View v = layoutInflater.inflate(R.layout.drawer_list_item, null);
+		//TODO 一次只顯示一個marker，最好是marker消失，然後polygon置中顯示
 		return v;
 	}
 }// end of InfoWindowAdapter

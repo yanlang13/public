@@ -8,7 +8,6 @@ import com.google.android.gms.maps.model.Marker;
 
 /**
  * 點擊polygon顯示infoWindows
- * 
  * @param layoutInflater
  * 
  */

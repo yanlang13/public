@@ -195,7 +195,6 @@ public class parseKmlString {
 				+ strinfBlue);
 		return argb;
 	}
-
 	// =============================================================priavteClassed
 
 }// end of parseKmlString
